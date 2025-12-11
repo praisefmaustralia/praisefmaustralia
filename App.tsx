@@ -5,11 +5,14 @@ import { Schedule } from './components/Schedule';
 import { PlayerBar } from './components/PlayerBar';
 import { ChatBot } from './components/ChatBot';
 import { RecentTracks } from './components/RecentTracks';
+import { Presenters } from './components/Presenters';
+import { Contact } from './components/Contact';
 import { CurrentShowProvider } from './contexts/CurrentShowContext';
 
 const App: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
+  const [currentView, setCurrentView] = useState('home');
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // Zeno FM Stream URL for Praise FM Australia
@@ -38,6 +41,22 @@ const App: React.FC = () => {
     }
   };
 
+  const handleNavigation = (view: string) => {
+    if (view === 'schedule') {
+      setCurrentView('home');
+      // Wait for render then scroll
+      setTimeout(() => {
+        const scheduleSection = document.getElementById('schedule');
+        if (scheduleSection) {
+          scheduleSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      setCurrentView(view);
+      window.scrollTo(0, 0);
+    }
+  };
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -63,27 +82,36 @@ const App: React.FC = () => {
         {/* Hidden Audio Element */}
         <audio ref={audioRef} src={STREAM_URL} preload="none" />
 
-        <Navbar />
+        <Navbar currentView={currentView} onNavigate={handleNavigation} />
         
         <main className="container mx-auto px-4 py-6 max-w-6xl space-y-12">
-          {/* Hero Section - Live Now */}
-          <section>
-            <Hero isPlaying={isPlaying} onPlayPause={togglePlay} />
-          </section>
+          {currentView === 'home' && (
+            <>
+              {/* Hero Section - Live Now */}
+              <section className="animate-fade-in">
+                <Hero isPlaying={isPlaying} onPlayPause={togglePlay} />
+              </section>
 
-          {/* Recently Played */}
-          <section>
-            <RecentTracks />
-          </section>
+              {/* Recently Played */}
+              <section className="animate-fade-in">
+                <RecentTracks />
+              </section>
 
-          {/* Schedule Section */}
-          <section id="schedule" className="scroll-mt-8">
-            <div className="flex items-center space-x-2 mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Weekly Schedule</h2>
-              <div className="h-1 flex-grow bg-gray-200 rounded-full ml-4"></div>
-            </div>
-            <Schedule />
-          </section>
+              {/* Schedule Section */}
+              <section id="schedule" className="scroll-mt-24 animate-fade-in">
+                <div className="flex items-center space-x-2 mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">Weekly Schedule</h2>
+                  <div className="h-1 flex-grow bg-gray-200 rounded-full ml-4"></div>
+                </div>
+                <Schedule />
+              </section>
+            </>
+          )}
+
+          {currentView === 'presenters' && <Presenters />}
+          
+          {currentView === 'contact' && <Contact />}
+
         </main>
 
         <PlayerBar 
