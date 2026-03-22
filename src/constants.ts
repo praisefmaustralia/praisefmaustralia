@@ -4,7 +4,7 @@ export const SHOWS: Show[] = [
   {
     id: 1,
     title: 'The Turning Point',
-    host: 'Noah Bennett',
+    host: 'With Noah Bennett',
     startTime: '00:00',
     endTime: '06:00',
     image:
@@ -14,7 +14,7 @@ export const SHOWS: Show[] = [
   {
     id: 2,
     title: 'Praise FM Worship',
-    host: 'With the best DJs',
+    host: 'With best DJs',
     startTime: '06:00',
     endTime: '07:00',
     image:
@@ -24,7 +24,7 @@ export const SHOWS: Show[] = [
   {
     id: 3,
     title: 'Aussie Morning',
-    host: ' With Livia Blake',
+    host: 'With Livia Blake',
     startTime: '07:00',
     endTime: '10:00',
     image:
@@ -104,7 +104,7 @@ export const SHOWS: Show[] = [
   {
     id: 11,
     title: 'Sunday Message',
-    host: 'With Preachers',
+    host: 'Invited Preacher',
     startTime: '23:00',
     endTime: '23:30',
     image:
