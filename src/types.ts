@@ -1,4 +1,4 @@
-export interface Show {
+export type Show = {
   id: number;
   title: string;
   host: string;
@@ -6,10 +6,10 @@ export interface Show {
   endTime: string;
   image: string;
   days: number[];
-}
+};
 
-export interface ShowStatus {
+export type ShowStatus = {
   current: Show | null;
   next: Show | null;
   progress: number;
-}
+};

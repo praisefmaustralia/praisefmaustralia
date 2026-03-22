@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { analyzeImageWithGemini } from '../services/geminiService';
 
 interface ImageAnalyzerProps {
   onClose: () => void;
@@ -26,9 +25,7 @@ export const ImageAnalyzer: React.FC<ImageAnalyzerProps> = ({ onClose }) => {
 
     setIsLoading(true);
     setAnalysis('');
-
-    try {
-      const result = await analyzeImageWithGemini(selectedFile, prompt);
+    
       setAnalysis(result || "Could not analyze the image.");
     } catch (error) {
       setAnalysis("Error analyzing image. Please try again.");

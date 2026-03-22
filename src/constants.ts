@@ -1,12 +1,4 @@
-export type Show = {
-  [x: string]: any;
-  id: number;
-  title: string;
-  host: string;
-  startTime: string;
-  endTime: string;
-  image: string;
-};
+import { Show } from './types';
 
 export const SHOWS: Show[] = [
   {
@@ -17,14 +9,17 @@ export const SHOWS: Show[] = [
     endTime: '06:00',
     image:
       'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208853/logotheturningpoint_vkfag6.png',
+    days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
     id: 2,
     title: 'Praise FM Worship',
+    host: 'Praise FM Australia',
     startTime: '06:00',
     endTime: '07:00',
-    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208853/logoworship_v2gdet.png',
-    host: "DJ's"
+    image:
+      'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208853/logoworship_v2gdet.png',
+    days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
     id: 3,
@@ -34,6 +29,7 @@ export const SHOWS: Show[] = [
     endTime: '10:00',
     image:
       'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208735/logoaussiemorning_viwgyz.png',
+    days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
     id: 4,
@@ -43,6 +39,7 @@ export const SHOWS: Show[] = [
     endTime: '12:00',
     image:
       'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208853/logomiddayjourney_g3fscw.png',
+    days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
     id: 5,
@@ -52,6 +49,7 @@ export const SHOWS: Show[] = [
     endTime: '14:00',
     image:
       'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208852/logononstop_i20xbg.png',
+    days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
     id: 6,
@@ -61,6 +59,7 @@ export const SHOWS: Show[] = [
     endTime: '16:00',
     image:
       'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208852/logonextwave_kcarnw.png',
+    days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
     id: 7,
@@ -70,6 +69,7 @@ export const SHOWS: Show[] = [
     endTime: '18:00',
     image:
       'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208852/logoroadtohome_qbvbt8.png',
+    days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
     id: 8,
@@ -79,6 +79,7 @@ export const SHOWS: Show[] = [
     endTime: '20:00',
     image:
       'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208852/logopop_tiljyp.png',
+    days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
     id: 9,
@@ -88,6 +89,7 @@ export const SHOWS: Show[] = [
     endTime: '22:00',
     image:
       'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208852/logoliveshow_k2aftt.png',
+    days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
     id: 10,
@@ -97,6 +99,7 @@ export const SHOWS: Show[] = [
     endTime: '23:00',
     image:
       'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208852/logoeveningvault_y2bsvk.png',
+    days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
     id: 11,
@@ -106,6 +109,7 @@ export const SHOWS: Show[] = [
     endTime: '23:30',
     image:
       'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208852/logosundaymessage_zuqwhu.png',
+    days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
     id: 12,
@@ -115,5 +119,6 @@ export const SHOWS: Show[] = [
     endTime: '00:00',
     image:
       'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208851/logoroadtochurch_vxtrwl.png',
+    days: [0, 1, 2, 3, 4, 5, 6],
   },
 ];
