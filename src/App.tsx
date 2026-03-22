@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Navbar } from '../components/Navbar';
-import { Hero } from '../components/Hero';
-import { Schedule } from '../components/Schedule';
-import { Presenters } from '../components/Presenters';
-import { RecentTracks } from '../components/RecentTracks';
-import { ChatBot } from '../components/ChatBot';
-import { PlayerBar } from '../components/PlayerBar';
-import { CurrentShowProvider } from '../contexts/CurrentShowContext';
+import { Navbar } from './components/Navbar';
+import { Hero } from './components/Hero';
+import { Schedule } from './components/Schedule';
+import { Presenters } from './components/Presenters';
+import { RecentTracks } from './components/RecentTracks';
+import { PlayerBar } from './components/PlayerBar';
+import { CurrentShowProvider } from './contexts/CurrentShowContext';
 
 type ViewType = 'home' | 'music' | 'schedule' | 'events' | 'devotional' | 'sounds';
 
@@ -17,13 +16,6 @@ type LiveMetadata = {
 };
 
 const STREAM_URL = 'https://stream.zeno.fm/vku09lx2rkntv';
-
-/*
-  If your Zeno mount is exactly the same token as the stream URL, this should work:
-  https://api.zeno.fm/mounts/metadata/subscribe/vku09lx2rkntv
-
-  If metadata doesn't appear, open your Zeno dashboard and confirm the exact mount.
-*/
 const METADATA_URL = 'https://api.zeno.fm/mounts/metadata/subscribe/vku09lx2rkntv';
 
 function parseStreamTitle(streamTitle: string) {
@@ -32,6 +24,7 @@ function parseStreamTitle(streamTitle: string) {
   }
 
   const separators = [' - ', ' – ', ' — ', ' | '];
+
   for (const sep of separators) {
     if (streamTitle.includes(sep)) {
       const [artist, ...rest] = streamTitle.split(sep);
@@ -71,8 +64,8 @@ export default function App() {
         await audioRef.current.play();
         setIsPlaying(true);
       }
-    } catch (err) {
-      console.error('Playback error:', err);
+    } catch (error) {
+      console.error('Playback error:', error);
     }
   };
 
@@ -146,16 +139,16 @@ export default function App() {
               artwork,
             });
           }
-        } catch (err) {
-          console.error('Metadata parse error:', err);
+        } catch (error) {
+          console.error('Metadata parse error:', error);
         }
       };
 
       eventSource.onerror = () => {
         console.warn('Zeno metadata connection error');
       };
-    } catch (err) {
-      console.error('Metadata connection failed:', err);
+    } catch (error) {
+      console.error('Metadata connection failed:', error);
     }
 
     return () => {
@@ -190,11 +183,7 @@ export default function App() {
             </div>
           )}
 
-          {currentView === 'schedule' && (
-            <div>
-              <Schedule />
-            </div>
-          )}
+          {currentView === 'schedule' && <Schedule />}
 
           {currentView === 'events' && (
             <div className="text-center py-12">
@@ -217,8 +206,6 @@ export default function App() {
             </div>
           )}
         </main>
-
-        <ChatBot />
 
         <PlayerBar
           isPlaying={isPlaying}
