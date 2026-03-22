@@ -13,6 +13,7 @@ type ViewType = 'home' | 'music' | 'schedule' | 'events' | 'devotional' | 'sound
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewType>('home');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(70);
 
   const handleNavigate = (view: string) => {
     setCurrentView(view as ViewType);
@@ -20,6 +21,10 @@ export default function App() {
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
+  };
+
+  const handleVolumeChange = (newVolume: number) => {
+    setVolume(newVolume);
   };
 
   return (
@@ -81,7 +86,7 @@ export default function App() {
         <ChatBot />
 
         {/* Player Bar */}
-        <PlayerBar isPlaying={isPlaying} onPlayPause={handlePlayPause} />
+        <PlayerBar isPlaying={isPlaying} onPlayPause={handlePlayPause} volume={volume} onVolumeChange={handleVolumeChange} />
       </div>
     </CurrentShowProvider>
   );
