@@ -8,106 +8,179 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ isPlaying, onPlayPause }) => {
-  const { current, progress } = useCurrentShow();
-
-  if (!current) return <div className="h-64 bg-gray-100 rounded-xl animate-pulse"></div>;
-
-  const start = formatTime12Hour(current.startTime);
-  const end = formatTime12Hour(current.endTime);
-
-  // SVG Config for Progress Ring
-  const radius = 58; 
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
+  const { current, next } = useCurrentShow();
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 md:p-10 relative overflow-hidden border border-gray-200">
-      <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-8">
-        
-        {/* Album Art / Show Image Container */}
-        <div className="relative flex-shrink-0 group flex justify-center items-center">
-            
-          {/* Progress Ring SVG */}
-          <div className="absolute w-[115%] h-[115%] z-0 -rotate-90 pointer-events-none">
-            <svg className="w-full h-full" viewBox="0 0 120 120">
-                {/* Background Track */}
-                <circle 
-                    cx="60" 
-                    cy="60" 
-                    r={radius} 
-                    fill="none" 
-                    stroke="#fed7aa" /* orange-200 */
-                    strokeWidth="2"
-                    className="opacity-50"
-                />
-                 {/* Progress Indicator */}
-                <circle 
-                    cx="60" 
-                    cy="60" 
-                    r={radius} 
-                    fill="none" 
-                    stroke="#ea580c" /* orange-600 */
-                    strokeWidth="3"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={strokeDashoffset}
-                    strokeLinecap="round"
-                    className="transition-all duration-1000 ease-linear"
-                />
-            </svg>
-          </div>
+    <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-gray-950 via-gray-900 to-orange-900 text-white shadow-2xl">
+      <div className="absolute inset-0 opacity-20">
+        {current?.image && (
+          <img
+            src={current.image}
+            alt={current.title}
+            className="w-full h-full object-cover"
+          />
+        )}
+      </div>
 
-          <div className="w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-white shadow-xl relative z-10">
-            <img 
-              src={current.image ? current.image : `https://picsum.photos/seed/${current.id}/500`} 
-              alt={current.title} 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          </div>
-          
-          {/* Rank/Badge */}
-          <div className="absolute bottom-2 right-2 md:right-4 z-20 bg-black text-white w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-bold text-lg md:text-xl border-4 border-white shadow-lg">
-            2
-          </div>
-        </div>
+      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/65 to-black/40" />
 
-        {/* Info */}
-        <div className="flex-1 text-center md:text-left pt-4 md:pt-8">
-          <div className="flex items-center justify-center md:justify-start space-x-2 mb-3">
-             <span className="flex h-3 w-3 relative">
+      <div className="relative px-6 py-10 md:px-10 md:py-14 lg:px-14 lg:py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.25em] text-orange-300">
+              <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-orange-500"></span>
               </span>
-            <span className="text-orange-600 font-bold text-sm tracking-wide uppercase">
-              LIVE • {start} - {end}
-            </span>
-          </div>
-          
-          <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-2 leading-tight">
-            {current.title}
-          </h2>
-          <p className="text-xl text-gray-600 font-medium mb-4">with {current.host}</p>
-          
-          <p className="text-gray-500 max-w-lg mb-8 mx-auto md:mx-0 leading-relaxed">
-            {current.description || `Join ${current.host} for an inspiring mix of music and encouragement. You are listening to Praise FM Australia.`}
-          </p>
+              Live from Australia
+            </div>
 
-          <button 
-            onClick={onPlayPause}
-            className="inline-flex items-center space-x-3 bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-full font-bold shadow-lg shadow-orange-600/30 hover:shadow-orange-600/50 transition-all transform hover:-translate-y-1 active:scale-95"
-          >
-            {isPlaying ? (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                 <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
+            <div className="space-y-4">
+              <p className="text-sm md:text-base font-bold uppercase tracking-[0.25em] text-orange-300">
+                On Air Now
+              </p>
+
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight">
+                {current?.title || 'Praise FM Australia'}
+              </h1>
+
+              <p className="text-lg md:text-xl text-white/75 font-medium">
+                {current?.host || 'Contemporary Christian Radio'}
+              </p>
+
+              {current && (
+                <p className="text-sm md:text-base text-white/70 font-semibold">
+                  {formatTime12Hour(current.startTime)} – {formatTime12Hour(current.endTime)}
+                </p>
+              )}
+            </div>
+
+            <p className="max-w-2xl text-base md:text-lg text-white/80 leading-relaxed">
+              Worship, encouragement, Bible teaching, and uplifting music all day long on Praise FM Australia.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-4 pt-2">
+              <button
+                onClick={onPlayPause}
+                className="inline-flex items-center gap-3 rounded-full bg-orange-500 hover:bg-orange-600 px-6 py-4 font-black text-white shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                {isPlaying ? (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+                    </svg>
+                    Pause Live Stream
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                    Listen Live
+                  </>
+                )}
+              </button>
+
+              <a
+                href="#schedule"
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 hover:bg-white/15 px-6 py-4 font-bold text-white transition-all"
+              >
+                View Schedule
+              </a>
+            </div>
+
+            {next && (
+              <div className="pt-4">
+                <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-teal-300 mb-2">
+                  Coming Up Next
+                </p>
+                <div className="flex items-center gap-3 rounded-2xl bg-white/10 border border-white/10 p-4 max-w-xl">
+                  <div className="w-14 h-14 rounded-xl overflow-hidden bg-white/10 flex-shrink-0">
+                    <img
+                      src={next.image}
+                      alt={next.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  <div className="min-w-0">
+                    <h3 className="font-black text-lg truncate">{next.title}</h3>
+                    <p className="text-white/70 text-sm truncate">{next.host}</p>
+                    <p className="text-teal-300 text-sm font-bold mt-1">
+                      {formatTime12Hour(next.startTime)} – {formatTime12Hour(next.endTime)}
+                    </p>
+                  </div>
+                </div>
+              </div>
             )}
-            <span>{isPlaying ? 'Pause Live' : 'Listen Live'}</span>
-          </button>
+          </div>
+
+          <div className="flex justify-center lg:justify-end">
+            <div className="relative w-full max-w-md">
+              <div className="absolute -inset-4 rounded-[2rem] bg-orange-500/20 blur-2xl" />
+              <div className="relative rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl bg-white/5 backdrop-blur-sm">
+                <div className="aspect-square bg-black">
+                  {current?.image ? (
+                    <img
+                      src={current.image}
+                      alt={current.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-white/40 text-lg font-bold">
+                      Praise FM Australia
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-6 border-t border-white/10 bg-black/30">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-[0.2em] text-orange-300 font-extrabold mb-2">
+                        Live Program
+                      </p>
+                      <h3 className="text-2xl font-black truncate">
+                        {current?.title || 'Praise FM Australia'}
+                      </h3>
+                      <p className="text-white/70 truncate mt-1">
+                        {current?.host || 'Christian Radio'}
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={onPlayPause}
+                      className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-all shadow-lg flex-shrink-0"
+                    >
+                      {isPlaying ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+                        </svg>
+                      ) : (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+
+                  {current && (
+                    <div className="mt-5 flex items-center justify-between text-sm">
+                      <span className="font-bold text-white/70">
+                        {formatTime12Hour(current.startTime)} – {formatTime12Hour(current.endTime)}
+                      </span>
+
+                      <span className="inline-flex items-center gap-2 text-orange-300 font-extrabold uppercase tracking-wider">
+                        <span className="w-2.5 h-2.5 rounded-full bg-orange-400 animate-pulse" />
+                        Live
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
