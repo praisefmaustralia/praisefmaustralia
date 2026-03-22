@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Navbar } from '../components/Navbar';
 import { Hero } from '../components/Hero';
 import { Schedule } from '../components/Schedule';
@@ -10,30 +10,166 @@ import { CurrentShowProvider } from '../contexts/CurrentShowContext';
 
 type ViewType = 'home' | 'music' | 'schedule' | 'events' | 'devotional' | 'sounds';
 
+type LiveMetadata = {
+  artist: string;
+  title: string;
+  artwork?: string;
+};
+
+const STREAM_URL = 'https://stream.zeno.fm/vku09lx2rkntv';
+
+/*
+  If your Zeno mount is exactly the same token as the stream URL, this should work:
+  https://api.zeno.fm/mounts/metadata/subscribe/vku09lx2rkntv
+
+  If metadata doesn't appear, open your Zeno dashboard and confirm the exact mount.
+*/
+const METADATA_URL = 'https://api.zeno.fm/mounts/metadata/subscribe/vku09lx2rkntv';
+
+function parseStreamTitle(streamTitle: string) {
+  if (!streamTitle) {
+    return { artist: '', title: 'Live Broadcast' };
+  }
+
+  const separators = [' - ', ' – ', ' — ', ' | '];
+  for (const sep of separators) {
+    if (streamTitle.includes(sep)) {
+      const [artist, ...rest] = streamTitle.split(sep);
+      return {
+        artist: artist.trim(),
+        title: rest.join(sep).trim() || 'Live Broadcast',
+      };
+    }
+  }
+
+  return {
+    artist: '',
+    title: streamTitle.trim(),
+  };
+}
+
 export default function App() {
   const [currentView, setCurrentView] = useState<ViewType>('home');
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(70);
+  const [volume, setVolume] = useState(0.7);
+  const [liveMetadata, setLiveMetadata] = useState<LiveMetadata | null>(null);
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleNavigate = (view: string) => {
     setCurrentView(view as ViewType);
   };
 
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
+  const handlePlayPause = async () => {
+    if (!audioRef.current) return;
+
+    try {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      }
+    } catch (err) {
+      console.error('Playback error:', err);
+    }
   };
 
   const handleVolumeChange = (newVolume: number) => {
-    setVolume(newVolume);
+    const normalized = Math.max(0, Math.min(1, newVolume));
+    setVolume(normalized);
+
+    if (audioRef.current) {
+      audioRef.current.volume = normalized;
+      audioRef.current.muted = normalized === 0;
+    }
   };
+
+  useEffect(() => {
+    if (!audioRef.current) return;
+    audioRef.current.volume = volume;
+  }, [volume]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const onPlay = () => setIsPlaying(true);
+    const onPause = () => setIsPlaying(false);
+    const onEnded = () => setIsPlaying(false);
+
+    audio.addEventListener('play', onPlay);
+    audio.addEventListener('pause', onPause);
+    audio.addEventListener('ended', onEnded);
+
+    return () => {
+      audio.removeEventListener('play', onPlay);
+      audio.removeEventListener('pause', onPause);
+      audio.removeEventListener('ended', onEnded);
+    };
+  }, []);
+
+  useEffect(() => {
+    let eventSource: EventSource | null = null;
+
+    try {
+      eventSource = new EventSource(METADATA_URL);
+
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+
+          const streamTitle =
+            data?.streamTitle ||
+            data?.title ||
+            data?.currentSong ||
+            '';
+
+          const currentArtist =
+            data?.currentArtist ||
+            data?.artist ||
+            '';
+
+          const artwork =
+            data?.artwork ||
+            data?.cover ||
+            data?.thumbnail ||
+            undefined;
+
+          if (streamTitle || currentArtist) {
+            const parsed = parseStreamTitle(streamTitle);
+
+            setLiveMetadata({
+              artist: currentArtist || parsed.artist || '',
+              title: parsed.title || 'Live Broadcast',
+              artwork,
+            });
+          }
+        } catch (err) {
+          console.error('Metadata parse error:', err);
+        }
+      };
+
+      eventSource.onerror = () => {
+        console.warn('Zeno metadata connection error');
+      };
+    } catch (err) {
+      console.error('Metadata connection failed:', err);
+    }
+
+    return () => {
+      if (eventSource) eventSource.close();
+    };
+  }, []);
 
   return (
     <CurrentShowProvider>
       <div className="min-h-screen bg-gray-50 flex flex-col">
-        {/* Navbar */}
+        <audio ref={audioRef} src={STREAM_URL} preload="none" />
+
         <Navbar currentView={currentView} onNavigate={handleNavigate} />
 
-        {/* Main Content */}
         <main className="flex-1 container mx-auto px-4 py-8 max-w-6xl">
           {currentView === 'home' && (
             <div className="space-y-12">
@@ -82,11 +218,16 @@ export default function App() {
           )}
         </main>
 
-        {/* Chat Bot */}
         <ChatBot />
 
-        {/* Player Bar */}
-        <PlayerBar isPlaying={isPlaying} onPlayPause={handlePlayPause} volume={volume} onVolumeChange={handleVolumeChange} />
+        <PlayerBar
+          isPlaying={isPlaying}
+          onPlayPause={handlePlayPause}
+          volume={volume}
+          onVolumeChange={handleVolumeChange}
+          audioRef={audioRef}
+          liveMetadata={liveMetadata}
+        />
       </div>
     </CurrentShowProvider>
   );
