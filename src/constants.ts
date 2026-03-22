@@ -4,7 +4,7 @@ export const SHOWS: Show[] = [
   {
     id: 1,
     title: 'The Turning Point',
-    host: 'Dr. David Jeremiah',
+    host: 'Noah Bennett',
     startTime: '00:00',
     endTime: '06:00',
     image:
@@ -14,7 +14,7 @@ export const SHOWS: Show[] = [
   {
     id: 2,
     title: 'Praise FM Worship',
-    host: 'Praise FM Australia',
+    host: 'With the best DJs',
     startTime: '06:00',
     endTime: '07:00',
     image:
@@ -24,7 +24,7 @@ export const SHOWS: Show[] = [
   {
     id: 3,
     title: 'Aussie Morning',
-    host: 'Praise FM Australia',
+    host: ' With Livia Blake',
     startTime: '07:00',
     endTime: '10:00',
     image:
@@ -34,7 +34,7 @@ export const SHOWS: Show[] = [
   {
     id: 4,
     title: 'Midday Journey',
-    host: 'Praise FM Australia',
+    host: 'With Liam Carter',
     startTime: '10:00',
     endTime: '12:00',
     image:
@@ -44,7 +44,7 @@ export const SHOWS: Show[] = [
   {
     id: 5,
     title: 'Praise FM Non Stop',
-    host: 'Praise FM Australia',
+    host: 'The best of Worship',
     startTime: '12:00',
     endTime: '14:00',
     image:
@@ -54,7 +54,7 @@ export const SHOWS: Show[] = [
   {
     id: 6,
     title: 'Next Wave',
-    host: 'Praise FM Australia',
+    host: 'With Sophie Mitchell',
     startTime: '14:00',
     endTime: '16:00',
     image:
@@ -64,7 +64,7 @@ export const SHOWS: Show[] = [
   {
     id: 7,
     title: 'Road To Home',
-    host: 'Praise FM Australia',
+    host: 'With Emily Davis',
     startTime: '16:00',
     endTime: '18:00',
     image:
@@ -74,7 +74,7 @@ export const SHOWS: Show[] = [
   {
     id: 8,
     title: 'Praise FM POP',
-    host: 'Jordan Reyes',
+    host: 'The best DJs',
     startTime: '18:00',
     endTime: '20:00',
     image:
@@ -84,7 +84,7 @@ export const SHOWS: Show[] = [
   {
     id: 9,
     title: 'Praise FM Live Show',
-    host: 'Praise FM Australia',
+    host: 'Live Show',
     startTime: '20:00',
     endTime: '22:00',
     image:
@@ -94,7 +94,7 @@ export const SHOWS: Show[] = [
   {
     id: 10,
     title: 'Evening Vault',
-    host: 'Praise FM Australia',
+    host: 'With Jack Thompson',
     startTime: '22:00',
     endTime: '23:00',
     image:
@@ -104,7 +104,7 @@ export const SHOWS: Show[] = [
   {
     id: 11,
     title: 'Sunday Message',
-    host: 'Pastoral Team',
+    host: 'With Preachers',
     startTime: '23:00',
     endTime: '23:30',
     image:
@@ -114,7 +114,7 @@ export const SHOWS: Show[] = [
   {
     id: 12,
     title: 'Road to Church',
-    host: 'Praise FM Australia',
+    host: 'With Matthew Reed',
     startTime: '23:30',
     endTime: '00:00',
     image:
