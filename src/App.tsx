@@ -15,6 +15,14 @@ type LiveMetadata = {
   artwork?: string;
 };
 
+type TrackItem = {
+  id: string;
+  artist: string;
+  title: string;
+  artwork?: string;
+  playedAt: string;
+};
+
 const STREAM_URL = 'https://stream.zeno.fm/vku09lx2rkntv';
 const METADATA_URL = 'https://api.zeno.fm/mounts/metadata/subscribe/vku09lx2rkntv';
 
@@ -46,8 +54,13 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.7);
   const [liveMetadata, setLiveMetadata] = useState<LiveMetadata | null>(null);
+  const [recentTracks, setRecentTracks] = useState<TrackItem[]>(() => {
+    const saved = localStorage.getItem('praisefm-au-recent-tracks');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const lastTrackKeyRef = useRef<string>('');
 
   const handleNavigate = (view: string) => {
     setCurrentView(view as ViewType);
@@ -78,6 +91,10 @@ export default function App() {
       audioRef.current.muted = normalized === 0;
     }
   };
+
+  useEffect(() => {
+    localStorage.setItem('praisefm-au-recent-tracks', JSON.stringify(recentTracks));
+  }, [recentTracks]);
 
   useEffect(() => {
     if (!audioRef.current) return;
@@ -133,11 +150,43 @@ export default function App() {
           if (streamTitle || currentArtist) {
             const parsed = parseStreamTitle(streamTitle);
 
-            setLiveMetadata({
+            const nextMetadata: LiveMetadata = {
               artist: currentArtist || parsed.artist || '',
               title: parsed.title || 'Live Broadcast',
               artwork,
-            });
+            };
+
+            setLiveMetadata(nextMetadata);
+
+            const trackKey = `${nextMetadata.artist}::${nextMetadata.title}`.trim();
+
+            if (
+              nextMetadata.title &&
+              trackKey !== '::' &&
+              trackKey !== lastTrackKeyRef.current
+            ) {
+              lastTrackKeyRef.current = trackKey;
+
+              setRecentTracks((prev) => {
+                const nextTrack: TrackItem = {
+                  id: `${Date.now()}-${trackKey}`,
+                  artist: nextMetadata.artist || 'Praise FM Australia',
+                  title: nextMetadata.title,
+                  artwork: nextMetadata.artwork,
+                  playedAt: new Date().toISOString(),
+                };
+
+                const filtered = prev.filter(
+                  (item) =>
+                    !(
+                      item.title === nextTrack.title &&
+                      item.artist === nextTrack.artist
+                    )
+                );
+
+                return [nextTrack, ...filtered].slice(0, 10);
+              });
+            }
           }
         } catch (error) {
           console.error('Metadata parse error:', error);
@@ -169,17 +218,17 @@ export default function App() {
               <Hero isPlaying={isPlaying} onPlayPause={handlePlayPause} />
               <Schedule />
               <Presenters />
-              <RecentTracks />
+              <RecentTracks tracks={recentTracks} />
             </div>
           )}
 
           {currentView === 'music' && (
             <div className="space-y-8">
               <div className="text-center py-12">
-                <h2 className="text-4xl font-black text-gray-900 mb-4">Music Library</h2>
-                <p className="text-xl text-gray-600">Explore our collection of Christian music</p>
+                <h2 className="text-4xl font-black text-gray-900 mb-4">Recent Tracks</h2>
+                <p className="text-xl text-gray-600">Recently played on Praise FM Australia</p>
               </div>
-              <RecentTracks />
+              <RecentTracks tracks={recentTracks} />
             </div>
           )}
 
