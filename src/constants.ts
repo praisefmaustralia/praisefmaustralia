@@ -1,4 +1,5 @@
 export type Show = {
+  [x: string]: any;
   id: number;
   title: string;
   host: string;
@@ -22,8 +23,8 @@ export const SHOWS: Show[] = [
     title: 'Praise FM Worship',
     startTime: '06:00',
     endTime: '07:00',
-    image:
-      'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208853/logoworship_v2gdet.png',
+    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208853/logoworship_v2gdet.png',
+    host: "DJ's"
   },
   {
     id: 3,
