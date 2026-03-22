@@ -5,6 +5,7 @@ export interface Show {
   startTime: string;
   endTime: string;
   image: string;
+  days: number[];
 }
 
 export interface ShowStatus {

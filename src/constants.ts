@@ -20,7 +20,6 @@ export const SHOWS: Show[] = [
   {
     id: 2,
     title: 'Praise FM Worship',
-    host: 'Praise FM Australia',
     startTime: '06:00',
     endTime: '07:00',
     image:
