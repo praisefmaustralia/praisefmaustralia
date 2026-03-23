@@ -1,6 +1,5 @@
 export const formatToAmPm = (time: string): string => {
   const [hours, minutes] = time.split(':').map(Number);
-
   const period = hours >= 12 ? 'PM' : 'AM';
   const hour12 = hours % 12 || 12;
 
