@@ -1,6 +1,6 @@
 import React from 'react';
 import { SHOWS } from '../constants';
-import { formatToAmPm } from '../utils/time';
+import { formatTime12Hour } from '../utils/schedule';
 
 export const Presenters: React.FC = () => {
   const uniqueShows = SHOWS.filter(
@@ -10,23 +10,23 @@ export const Presenters: React.FC = () => {
   );
 
   return (
-    <div className="space-y-12">
-      <div className="text-center py-12 bg-white rounded-2xl shadow-sm border">
-        <h2 className="text-4xl font-black text-gray-900 mb-4">
+    <section className="space-y-6 animate-fade-in">
+      <div className="text-center py-6 sm:py-8 md:py-10 bg-white rounded-2xl shadow-sm border border-gray-100">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-3">
           Featured Shows
         </h2>
-        <p className="text-xl text-gray-600">
+        <p className="text-sm sm:text-base md:text-lg text-gray-600 px-4">
           The sound of Praise FM Australia
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {uniqueShows.map((show) => (
           <div
             key={show.id}
-            className="bg-white rounded-xl shadow-sm border overflow-hidden hover:shadow-lg transition"
+            className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition"
           >
-            <div className="h-64 bg-gray-100">
+            <div className="h-40 sm:h-48 md:h-52 bg-gray-100">
               <img
                 src={show.image}
                 alt={show.title}
@@ -34,22 +34,22 @@ export const Presenters: React.FC = () => {
               />
             </div>
 
-            <div className="p-6">
-              <h3 className="text-xl font-bold text-gray-900">
+            <div className="p-4 sm:p-5">
+              <h3 className="text-base sm:text-lg font-bold text-gray-900">
                 {show.title}
               </h3>
 
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-xs sm:text-sm text-gray-500 mb-3">
                 {show.host}
               </p>
 
-              <p className="text-orange-600 font-bold">
-                {formatToAmPm(show.startTime)} – {formatToAmPm(show.endTime)}
+              <p className="text-sm font-bold text-orange-600">
+                {formatTime12Hour(show.startTime)} – {formatTime12Hour(show.endTime)}
               </p>
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 };
