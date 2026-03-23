@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
-import { Schedule } from './components/Schedule';
+import { Schedule } from './components/ScheduleList';
 import { Presenters } from './components/Presenters';
 import { RecentTracks } from './components/RecentTracks';
 import { PlayerBar } from './components/PlayerBar';

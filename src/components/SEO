@@ -1,0 +1,96 @@
+import { useEffect } from "react";
+
+interface SEOProps {
+  title: string;
+  description: string;
+  image?: string;
+}
+
+const DEFAULT_IMAGE =
+  "https://res.cloudinary.com/ddhu86ukg/image/upload/v1774221235/SVGAUS_vnyvbf.webp";
+
+const SITE_URL = "https://praisefmradio.vercel.app";
+
+const SEO: React.FC<SEOProps> = ({ title, description, image }) => {
+  useEffect(() => {
+    document.title = title;
+
+    const setMeta = (key: string, content: string, isProperty = false) => {
+      let meta = document.querySelector(
+        isProperty
+          ? `meta[property="${key}"]`
+          : `meta[name="${key}"]`
+      );
+
+      if (!meta) {
+        meta = document.createElement("meta");
+        meta.setAttribute(isProperty ? "property" : "name", key);
+        document.head.appendChild(meta);
+      }
+
+      meta.setAttribute("content", content);
+    };
+
+    // 🔥 GOOGLE SEO
+    setMeta("description", description);
+    setMeta("robots", "index, follow");
+    setMeta("author", "Praise FM Sydney");
+
+    // 🔥 OPEN GRAPH
+    setMeta("og:title", title, true);
+    setMeta("og:description", description, true);
+    setMeta("og:image", image || DEFAULT_IMAGE, true);
+    setMeta("og:type", "website", true);
+    setMeta("og:site_name", "Praise FM Sydney", true);
+    setMeta("og:url", SITE_URL, true);
+    setMeta("og:locale", "en_AU", true);
+
+    // 🔥 TWITTER
+    setMeta("twitter:card", "summary_large_image");
+    setMeta("twitter:title", title);
+    setMeta("twitter:description", description);
+    setMeta("twitter:image", image || DEFAULT_IMAGE);
+
+    // 🔥 CANONICAL (importante pro Google)
+    let link: HTMLLinkElement | null = document.querySelector("link[rel='canonical']");
+    if (!link) {
+      link = document.createElement("link");
+      link.setAttribute("rel", "canonical");
+      document.head.appendChild(link);
+    }
+    link.setAttribute("href", SITE_URL);
+
+    // 🔥 SCHEMA ORG (rádio profissional)
+    const scriptId = "schema-org";
+    let existingScript = document.getElementById(scriptId);
+
+    if (existingScript) existingScript.remove();
+
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = scriptId;
+
+    script.innerHTML = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "RadioStation",
+      "name": "Praise FM Sydney",
+      "url": SITE_URL,
+      "logo": image || DEFAULT_IMAGE,
+      "sameAs": [
+        "https://instagram.com/",
+        "https://facebook.com/"
+      ],
+      "areaServed": {
+        "@type": "Place",
+        "name": "Australia"
+      }
+    });
+
+    document.head.appendChild(script);
+
+  }, [title, description, image]);
+
+  return null;
+};
+
+export default SEO;

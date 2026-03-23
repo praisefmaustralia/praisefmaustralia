@@ -1,98 +1,146 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Music } from 'lucide-react';
 
-type TrackItem = {
-  id: string;
+interface Track {
   artist: string;
   title: string;
   artwork?: string;
-  playedAt: string;
-};
-
-interface RecentTracksProps {
-  tracks: TrackItem[];
+  playedAt?: Date;
+  isMusic?: boolean;
 }
 
-const formatPlayedTime = (isoDate: string) => {
-  const date = new Date(isoDate);
+interface RecentlyPlayedProps {
+  tracks: Track[];
+}
 
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: 'Australia/Sydney',
-  });
-};
+const RecentlyPlayed: React.FC<RecentlyPlayedProps> = ({ tracks }) => {
+  const [artworks, setArtworks] = useState<Record<string, string>>({});
 
-export const RecentTracks: React.FC<RecentTracksProps> = ({ tracks }) => {
+  const displayedTracks = tracks
+    .filter(track => track.isMusic !== false)
+    .slice(0, 4);
+
+  useEffect(() => {
+    const fetchArtworks = async () => {
+      const newArtworks = { ...artworks };
+      let changed = false;
+
+      for (const track of displayedTracks) {
+        const key = `${track.artist}-${track.title}`;
+
+        if (!newArtworks[key] && !track.artwork) {
+          try {
+            const itunesUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(track.artist + ' ' + track.title)}&media=music&limit=1`;
+            const res = await fetch(itunesUrl);
+
+            let foundImage = '';
+
+            if (res.ok && res.status !== 204) {
+              const text = await res.text();
+
+              if (text && text.trim().length > 0) {
+                try {
+                  const json = JSON.parse(text);
+                  if (json.results?.length > 0) {
+                    foundImage = json.results[0].artworkUrl100;
+                  }
+                } catch {
+                  console.debug("iTunes parse error");
+                }
+              }
+            }
+
+            if (!foundImage) {
+              foundImage = `https://picsum.photos/seed/${encodeURIComponent(key)}/100/100`;
+            }
+
+            newArtworks[key] = foundImage;
+            changed = true;
+
+          } catch {
+            newArtworks[key] = `https://picsum.photos/seed/${encodeURIComponent(key)}/100/100`;
+            changed = true;
+          }
+        }
+      }
+
+      if (changed) setArtworks(newArtworks);
+    };
+
+    if (displayedTracks.length > 0) {
+      fetchArtworks();
+    }
+
+  }, [displayedTracks]); // 🔧 corrigido (evita loop infinito)
+
   return (
-    <section className="space-y-6 animate-fade-in">
-      <div className="text-center py-6 sm:py-8 md:py-10 bg-white rounded-2xl shadow-sm border border-gray-100">
-        <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-3">
+    <section className="bg-white dark:bg-[#000] py-12 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-4">
+        <h2 className="text-3xl font-normal text-gray-900 dark:text-white mb-6 tracking-tight">
           Recent Tracks
         </h2>
-        <p className="text-sm sm:text-base md:text-lg text-gray-600 max-w-2xl mx-auto px-4">
-          Recently played on Praise FM Australia.
-        </p>
-      </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        {tracks.length === 0 ? (
-          <div className="p-6 sm:p-8 text-center text-sm sm:text-base text-gray-500">
-            Waiting for live metadata from the stream...
+        <div className="w-full">
+          <div className="grid grid-cols-12 gap-4 pb-2 border-b border-gray-200 dark:border-white/10 text-sm font-normal text-gray-900 dark:text-gray-100 mb-1">
+            <div className="col-span-8 md:col-span-6">Track</div>
+            <div className="col-span-4 md:col-span-6">Artist</div>
           </div>
-        ) : (
-          <div className="divide-y divide-gray-100">
-            {tracks.map((track, index) => (
-              <div
-                key={track.id}
-                className="flex items-center justify-between gap-3 px-3 sm:px-4 md:px-5 py-3 hover:bg-gray-50 transition-colors"
-              >
-                <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                  <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                    {track.artwork ? (
-                      <img
-                        src={track.artwork}
-                        alt={track.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-gray-400">
-                        FM
-                      </div>
-                    )}
-                  </div>
 
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      {index === 0 && (
-                        <span className="inline-flex items-center rounded-full bg-orange-100 text-orange-700 px-2 py-1 text-[10px] font-extrabold uppercase tracking-wider">
-                          Latest
-                        </span>
-                      )}
-                      <h3 className="text-sm sm:text-base font-black text-gray-900 truncate">
+          <div className="flex flex-col">
+            {displayedTracks.length === 0 ? (
+              <div className="py-12 text-center text-gray-400 text-sm border-b border-gray-100 dark:border-white/5">
+                No recent tracks found.
+              </div>
+            ) : (
+              displayedTracks.map((track, idx) => {
+                const key = `${track.artist}-${track.title}`;
+
+                const artworkUrl =
+                  artworks[key] ||
+                  track.artwork ||
+                  `https://picsum.photos/seed/${encodeURIComponent(key)}/100/100`;
+
+                return (
+                  <div
+                    key={idx}
+                    className="grid grid-cols-12 gap-4 py-4 border-b border-gray-100 dark:border-white/5 items-center hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group"
+                  >
+                    <div className="col-span-8 md:col-span-6 flex items-center space-x-4">
+                      <span className="text-[13px] text-gray-500 w-5 font-normal">
+                        {idx + 1}.
+                      </span>
+
+                      <div className="w-10 h-10 md:w-11 md:h-11 bg-gray-200 dark:bg-gray-800 flex-shrink-0">
+                        <img
+                          src={artworkUrl}
+                          alt={track.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              `https://picsum.photos/seed/${encodeURIComponent(key)}/100/100`;
+                          }}
+                        />
+                      </div>
+
+                      <span className="text-sm md:text-[15px] font-normal text-gray-900 dark:text-gray-100 truncate pr-4">
                         {track.title}
-                      </h3>
+                      </span>
                     </div>
 
-                    <p className="text-xs sm:text-sm text-gray-500 truncate">
-                      {track.artist || 'Praise FM Australia'}
-                    </p>
+                    <div className="col-span-4 md:col-span-6">
+                      <span className="text-sm md:text-[15px] text-gray-500 dark:text-gray-400 truncate block font-normal">
+                        {track.artist}
+                      </span>
+                    </div>
                   </div>
-                </div>
-
-                <div className="text-right flex-shrink-0">
-                  <p className="text-xs sm:text-sm font-bold text-orange-600">
-                    {formatPlayedTime(track.playedAt)}
-                  </p>
-                  <p className="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider mt-1">
-                    Played
-                  </p>
-                </div>
-              </div>
-            ))}
+                );
+              })
+            )}
           </div>
-        )}
+        </div>
       </div>
     </section>
   );
 };
+
+export default RecentlyPlayed;
