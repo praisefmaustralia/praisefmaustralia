@@ -60,7 +60,7 @@ export default function App() {
   });
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const lastTrackKeyRef = useRef<string>('');
+  const lastTrackKeyRef = useRef('');
 
   const handleNavigate = (view: string) => {
     setCurrentView(view as ViewType);
@@ -160,11 +160,7 @@ export default function App() {
 
             const trackKey = `${nextMetadata.artist}::${nextMetadata.title}`.trim();
 
-            if (
-              nextMetadata.title &&
-              trackKey !== '::' &&
-              trackKey !== lastTrackKeyRef.current
-            ) {
+            if (nextMetadata.title && trackKey !== '::' && trackKey !== lastTrackKeyRef.current) {
               lastTrackKeyRef.current = trackKey;
 
               setRecentTracks((prev) => {
@@ -177,11 +173,7 @@ export default function App() {
                 };
 
                 const filtered = prev.filter(
-                  (item) =>
-                    !(
-                      item.title === nextTrack.title &&
-                      item.artist === nextTrack.artist
-                    )
+                  (item) => !(item.title === nextTrack.title && item.artist === nextTrack.artist)
                 );
 
                 return [nextTrack, ...filtered].slice(0, 10);
@@ -212,21 +204,25 @@ export default function App() {
 
         <Navbar currentView={currentView} onNavigate={handleNavigate} />
 
-        <main className="flex-1 container mx-auto px-4 py-8 max-w-6xl">
+        <main className="flex-1 w-full max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8">
           {currentView === 'home' && (
-            <div className="space-y-12">
+            <div className="space-y-8 sm:space-y-10 lg:space-y-12">
               <Hero isPlaying={isPlaying} onPlayPause={handlePlayPause} />
               <Schedule />
-              <Presenters />
               <RecentTracks tracks={recentTracks} />
+              <Presenters />
             </div>
           )}
 
           {currentView === 'music' && (
-            <div className="space-y-8">
-              <div className="text-center py-12">
-                <h2 className="text-4xl font-black text-gray-900 mb-4">Recent Tracks</h2>
-                <p className="text-xl text-gray-600">Recently played on Praise FM Australia</p>
+            <div className="space-y-6 sm:space-y-8">
+              <div className="text-center py-6 sm:py-8">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-3">
+                  Recent Tracks
+                </h2>
+                <p className="text-sm sm:text-base md:text-lg text-gray-600">
+                  Recently played on Praise FM Australia
+                </p>
               </div>
               <RecentTracks tracks={recentTracks} />
             </div>
@@ -235,23 +231,33 @@ export default function App() {
           {currentView === 'schedule' && <Schedule />}
 
           {currentView === 'events' && (
-            <div className="text-center py-12">
-              <h2 className="text-4xl font-black text-gray-900 mb-4">Events</h2>
-              <p className="text-xl text-gray-600">Coming soon</p>
+            <div className="text-center py-10">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-3">
+                Events
+              </h2>
+              <p className="text-sm sm:text-base md:text-lg text-gray-600">Coming soon</p>
             </div>
           )}
 
           {currentView === 'devotional' && (
-            <div className="text-center py-12">
-              <h2 className="text-4xl font-black text-gray-900 mb-4">Devotional</h2>
-              <p className="text-xl text-gray-600">Daily inspiration and encouragement</p>
+            <div className="text-center py-10">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-3">
+                Devotional
+              </h2>
+              <p className="text-sm sm:text-base md:text-lg text-gray-600">
+                Daily inspiration and encouragement
+              </p>
             </div>
           )}
 
           {currentView === 'sounds' && (
-            <div className="text-center py-12">
-              <h2 className="text-4xl font-black text-gray-900 mb-4">My Sounds</h2>
-              <p className="text-xl text-gray-600">Your personal playlist</p>
+            <div className="text-center py-10">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 mb-3">
+                My Sounds
+              </h2>
+              <p className="text-sm sm:text-base md:text-lg text-gray-600">
+                Your personal playlist
+              </p>
             </div>
           )}
         </main>
