@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Calendar, ChevronLeft, Clock, User } from 'lucide-react';
 import { Program } from '../types';
 import { formatToAMPM } from '../utils/timeFormatter';
+import { SCHEDULES } from '../constants'; // ✅ Usando import em vez de require
 
 interface ScheduleListProps {
   onNavigateToProgram: (program: Program) => void;
@@ -9,9 +10,7 @@ interface ScheduleListProps {
 }
 
 const ScheduleList: React.FC<ScheduleListProps> = ({ onNavigateToProgram, onBack }) => {
-  // Vamos importar o SCHEDULES do constants
-  const { SCHEDULES } = require('../constants');
-  const [selectedDay, setSelectedDay] = React.useState<number>(new Date().getDay());
+  const [selectedDay, setSelectedDay] = useState<number>(new Date().getDay());
   
   const days = [
     { id: 0, name: 'Sunday' },
@@ -23,12 +22,12 @@ const ScheduleList: React.FC<ScheduleListProps> = ({ onNavigateToProgram, onBack
     { id: 6, name: 'Saturday' },
   ];
   
-  const schedule = SCHEDULES[selectedDay] || SCHEDULES[1];
+  const schedule = SCHEDULES[selectedDay] || SCHEDULES[1] || [];
   
-  // Agrupar por período (opcional, mas mantém organização)
-  const morningPrograms = schedule.filter(p => parseInt(p.startTime) < 12);
-  const afternoonPrograms = schedule.filter(p => parseInt(p.startTime) >= 12 && parseInt(p.startTime) < 18);
-  const eveningPrograms = schedule.filter(p => parseInt(p.startTime) >= 18);
+  // Agrupar por período
+  const morningPrograms = schedule.filter((p: Program) => parseInt(p.startTime) < 12);
+  const afternoonPrograms = schedule.filter((p: Program) => parseInt(p.startTime) >= 12 && parseInt(p.startTime) < 18);
+  const eveningPrograms = schedule.filter((p: Program) => parseInt(p.startTime) >= 18);
   
   const ProgramRow = ({ program }: { program: Program }) => (
     <div 
@@ -86,7 +85,7 @@ const ScheduleList: React.FC<ScheduleListProps> = ({ onNavigateToProgram, onBack
             <div className="px-4 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
               <h2 className="font-semibold text-gray-700 dark:text-gray-300">Morning</h2>
             </div>
-            {morningPrograms.map(p => <ProgramRow key={p.id} program={p} />)}
+            {morningPrograms.map((p: Program) => <ProgramRow key={p.id} program={p} />)}
           </>
         )}
         
@@ -95,7 +94,7 @@ const ScheduleList: React.FC<ScheduleListProps> = ({ onNavigateToProgram, onBack
             <div className="px-4 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
               <h2 className="font-semibold text-gray-700 dark:text-gray-300">Afternoon</h2>
             </div>
-            {afternoonPrograms.map(p => <ProgramRow key={p.id} program={p} />)}
+            {afternoonPrograms.map((p: Program) => <ProgramRow key={p.id} program={p} />)}
           </>
         )}
         
@@ -104,7 +103,7 @@ const ScheduleList: React.FC<ScheduleListProps> = ({ onNavigateToProgram, onBack
             <div className="px-4 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
               <h2 className="font-semibold text-gray-700 dark:text-gray-300">Evening</h2>
             </div>
-            {eveningPrograms.map(p => <ProgramRow key={p.id} program={p} />)}
+            {eveningPrograms.map((p: Program) => <ProgramRow key={p.id} program={p} />)}
           </>
         )}
       </div>
