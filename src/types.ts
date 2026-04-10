@@ -2,8 +2,8 @@ export interface Program {
   id: string;
   title: string;
   host: string;
-  startTime: string; // "HH:mm" format
-  endTime: string;   // "HH:mm" format
+  startTime: string;
+  endTime: string;
   description: string;
   image: string;
 }
@@ -15,7 +15,7 @@ export interface Show {
   startTime: string;
   endTime: string;
   image: string;
-  days: number[]; // 0 = Domingo, 1 = Segunda, 2 = Terça, etc.
+  days: number[];
 }
 
 export interface Podcast {
