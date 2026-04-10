@@ -14,6 +14,33 @@ interface Podcast {
 const DevotionalSection: React.FC = () => {
   const navigate = useNavigate();
 
+  const podcasts: Podcast[] = [
+    {
+      id: '1',
+      title: 'Morning Devotion',
+      category: 'Devotional',
+      duration: '25 min',
+      image: '/images/devotional1.jpg',
+      author: 'Preachers'
+    },
+    {
+      id: '2',
+      title: 'Evening Prayer',
+      category: 'Prayer',
+      duration: '20 min',
+      image: '/images/devotional2.jpg',
+      author: 'Sister Johnson'
+    },
+    {
+      id: '3',
+      title: 'Bible Study',
+      category: 'Study',
+      duration: '45 min',
+      image: '/images/devotional3.jpg',
+      author: 'Dr. Brown'
+    }
+  ];
+
   return (
     <section className="py-16 bg-[#f8f8f8] dark:bg-[#0a0a0a]">
       <div className="max-w-7xl mx-auto px-4">
@@ -33,6 +60,7 @@ const DevotionalSection: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {podcasts.map((podcast) => (
             <div 
               key={podcast.id} 
               className="group cursor-pointer bg-white dark:bg-[#121212] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 dark:border-white/5"
