@@ -164,7 +164,7 @@ const Playlist: React.FC = () => {
 
         setTracks(results);
       } catch {
-        console.debug("Erro ao carregar playlist");
+        console.debug("Error loading playlist");
       } finally {
         setLoading(false);
       }
@@ -190,6 +190,14 @@ const Playlist: React.FC = () => {
   const bList = tracks.slice(4, 8);
   const cList = tracks.slice(8, 12);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f2f2f2] dark:bg-[#000]">
+        <Loader2 className="w-8 h-8 animate-spin text-[#ff6600]" />
+      </div>
+    );
+  }
+
   return (
     <div className="bg-[#f2f2f2] dark:bg-[#000] min-h-screen">
       <audio ref={audioRef} onEnded={() => setActivePreview(null)} />
@@ -199,7 +207,7 @@ const Playlist: React.FC = () => {
           <div className="flex items-center space-x-2 text-[#ff6600] mb-4">
             <Music className="w-4 h-4" />
             <span className="text-[10px] font-medium uppercase tracking-[0.4em]">
-              Official Praise FM Sydney Selection
+              Official Praise FM Australia Selection
             </span>
           </div>
 
@@ -208,9 +216,30 @@ const Playlist: React.FC = () => {
           </h1>
 
           <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl uppercase">
-            Curated daily. The definitive sound of Praise FM Sydney.
+            Curated daily. The definitive sound of Praise FM Australia.
           </p>
         </div>
+      </div>
+
+      {/* Grid de playlists - adicionei para exibir os cards */}
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        {tracks.length === 0 && !loading && (
+          <p className="text-center text-gray-500 dark:text-gray-400">No tracks available. Check back later.</p>
+        )}
+        
+        {aList.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {aList.map(track => (
+              <PlaylistCard
+                key={track.trackId}
+                track={track}
+                isPlaying={activePreview === track.trackId}
+                onTogglePlay={() => togglePreview(track)}
+              />
+            ))}
+          </div>
+        )}
+        {/* Aqui você pode adicionar mais seções (bList, cList) se desejar */}
       </div>
     </div>
   );
