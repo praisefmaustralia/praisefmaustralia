@@ -1,21 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Home,
-  Music,
-  Radio,
-  Menu,
-  Calendar,
-  Sun,
-  Moon,
-  X,
-  User as UserIcon,
-  Library,
-  Settings,
-  Ticket
-} from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X, Sun, Moon, Music, Calendar, User, Heart, Home, Sparkles, Mic, Radio, HelpCircle, MessageSquare } from 'lucide-react';
+import { useState } from 'react';
+import { promptInstall } from '../utils/pwa.utils';
 
 interface NavbarProps {
   activeTab: string;
@@ -24,195 +11,133 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ activeTab, theme, onToggleTheme }) => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
 
-  useEffect(() => {
-    if (user) {
-      const fetchAvatar = async () => {
-        const { data } = await supabase
-          .from('profiles')
-          .select('avatar_url')
-          .eq('id', user.id)
-          .single();
-
-        if (data?.avatar_url) setAvatarUrl(data.avatar_url);
-      };
-      fetchAvatar();
-    }
-  }, [user]);
+  // Logo da Praise FM Australia
+  const LOGO_URL = 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774221235/SVGAUS_qmzryk.png';
 
   const navItems = [
     { id: 'home', label: 'Home', icon: Home, path: '/' },
     { id: 'music', label: 'Music', icon: Music, path: '/music' },
     { id: 'schedule', label: 'Schedule', icon: Calendar, path: '/schedule' },
-    { id: 'events', label: 'Events', icon: Ticket, path: '/events' },
-    { id: 'devotional', label: 'Devotional', icon: Radio, path: '/devotional' },
+    { id: 'presenters', label: 'Presenters', icon: Mic, path: '/presenters' },
+    { id: 'devotional', label: 'Devotional', icon: Sparkles, path: '/devotional' },
+    { id: 'events', label: 'Events', icon: Radio, path: '/events' },
+    { id: 'help', label: 'Help', icon: HelpCircle, path: '/help' },
   ];
 
+  const handleInstall = async () => {
+    await promptInstall();
+  };
+
   return (
-    <header className="bg-white dark:bg-[#0b0b0b] text-black dark:text-white">
-      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center h-full space-x-12">
-          <div
-            className="flex items-center cursor-pointer h-full"
-            onClick={() => navigate('/')}
-          >
-            <img
-              src="https://res.cloudinary.com/ddhu86ukg/image/upload/v1774221235/SVGAUS_vnyvbf.webp"
-              alt="Praise FM Sydney Logo"
-              className={`h-7 w-auto object-contain transition-all ${
-                theme === 'dark' ? 'brightness-0 invert' : ''
-              }`}
-            />
+    <nav className="bg-white dark:bg-[#121212] border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate('/')}>
+            <img src={LOGO_URL} alt="Praise FM Australia" className="h-10 w-auto" />
           </div>
 
-          <nav className="hidden md:flex items-center space-x-8 h-full">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = activeTab === item.id;
-
+              const isActive = activeTab === item.id || (item.path === '/' && activeTab === 'home');
               return (
-                <button
+                <Link
                   key={item.id}
-                  onClick={() => navigate(item.path)}
-                  className={`flex items-center space-x-2 text-[15px] font-medium transition-all h-full border-b-2 px-1 uppercase tracking-tighter ${
+                  to={item.path}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     isActive
-                      ? 'text-black dark:text-white border-[#ff6600]'
-                      : 'text-gray-500 border-transparent hover:text-black dark:hover:text-white'
+                      ? 'text-[#ff6600] bg-orange-50 dark:bg-orange-900/20'
+                      : 'text-gray-700 dark:text-gray-300 hover:text-[#ff6600] dark:hover:text-[#ff6600]'
                   }`}
                 >
-                  <Icon
-                    className={`w-4 h-4 ${
-                      isActive
-                        ? 'text-black dark:text-white'
-                        : 'text-gray-400'
-                    }`}
-                    strokeWidth={1.5}
-                  />
-                  <span>{item.label}</span>
-                </button>
+                  <span className="flex items-center gap-2">
+                    <Icon className="w-4 h-4" />
+                    {item.label}
+                  </span>
+                </Link>
               );
             })}
+          </div>
 
+          {/* Right side buttons */}
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => navigate('/my-sounds')}
-              className={`flex items-center space-x-2 text-[15px] font-medium transition-all h-full border-b-2 px-1 uppercase tracking-tighter ${
-                activeTab === 'my-sounds'
-                  ? 'text-black dark:text-white border-[#ff6600]'
-                  : 'text-gray-500 border-transparent hover:text-black dark:hover:text-white'
-              }`}
+              onClick={onToggleTheme}
+              className="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+              aria-label="Toggle theme"
             >
-              <Library className="w-4 h-4" strokeWidth={1.5} />
-              <span>My Sounds</span>
+              {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
             </button>
-          </nav>
-        </div>
-
-        <div className="flex items-center">
-          <button
-            onClick={onToggleTheme}
-            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-600 dark:text-gray-400 mr-8 md:mr-12"
-          >
-            {theme === 'light' ? (
-              <Moon className="w-4 h-4" />
-            ) : (
-              <Sun className="w-4 h-4 text-praise-accent" />
-            )}
-          </button>
-
-          <div className="flex items-center space-x-4">
-            {user ? (
-              <div className="hidden md:flex items-center space-x-4">
-                <button
-                  onClick={() => navigate('/profile')}
-                  className="flex items-center space-x-3 group"
-                >
-                  <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 dark:bg-white/10 flex items-center justify-center border border-transparent group-hover:border-[#ff6600] transition-all">
-                    {avatarUrl ? (
-                      <img
-                        src={avatarUrl}
-                        alt="User"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <UserIcon className="w-4 h-4 text-gray-500" />
-                    )}
-                  </div>
-                  <span className="text-[10px] font-medium uppercase tracking-widest text-gray-500 group-hover:text-black dark:group-hover:text-white">
-                    Profile
-                  </span>
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={() => navigate('/login')}
-                className="hidden md:block text-[10px] font-medium uppercase tracking-widest text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white"
-              >
-                Sign In
-              </button>
-            )}
-
+            
             <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 md:hidden text-gray-800 dark:text-white"
+              onClick={handleInstall}
+              className="hidden sm:block px-4 py-2 bg-[#ff6600] text-white rounded-full text-sm font-medium hover:bg-[#e55a00] transition-colors"
             >
-              {isMobileMenuOpen ? (
-                <X className="w-5 h-5" />
-              ) : (
-                <Menu className="w-5 h-5" />
-              )}
+              Install App
+            </button>
+
+            <Link
+              to="/profile"
+              className="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              <User className="w-5 h-5" />
+            </Link>
+
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden p-2 rounded-md text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
       </div>
 
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 top-16 bg-white dark:bg-black z-40 md:hidden p-6 overflow-y-auto">
-          <nav className="flex flex-col space-y-4">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  navigate(item.path);
-                  setIsMobileMenuOpen(false);
-                }}
-                className="flex items-center space-x-4 p-4 rounded-xl text-lg font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tighter"
-              >
-                <item.icon className="w-5 h-5" />
-                <span>{item.label}</span>
-              </button>
-            ))}
-
+      {/* Mobile menu */}
+      {isMenuOpen && (
+        <div className="md:hidden bg-white dark:bg-[#121212] border-t border-gray-200 dark:border-gray-800 py-2">
+          <div className="px-2 pt-2 pb-3 space-y-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeTab === item.id;
+              return (
+                <Link
+                  key={item.id}
+                  to={item.path}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium ${
+                    isActive
+                      ? 'text-[#ff6600] bg-orange-50 dark:bg-orange-900/20'
+                      : 'text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  {item.label}
+                </Link>
+              );
+            })}
             <button
               onClick={() => {
-                navigate('/my-sounds');
-                setIsMobileMenuOpen(false);
+                handleInstall();
+                setIsMenuOpen(false);
               }}
-              className="flex items-center space-x-4 p-4 rounded-xl text-lg font-medium text-gray-600 dark:text-gray-400 uppercase tracking-tighter"
+              className="w-full text-left flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium text-[#ff6600]"
             >
-              <Library className="w-5 h-5" />
-              <span>My Sounds</span>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Install App
             </button>
-
-            {user && (
-              <button
-                onClick={() => {
-                  navigate('/profile');
-                  setIsMobileMenuOpen(false);
-                }}
-                className="flex items-center space-x-4 p-4 rounded-xl text-lg font-medium text-[#ff6600] uppercase tracking-tighter border-t border-gray-100 dark:border-white/5 mt-4 pt-8"
-              >
-                <Settings className="w-5 h-5" />
-                <span>Account Settings</span>
-              </button>
-            )}
-          </nav>
+          </div>
         </div>
       )}
-    </header>
+    </nav>
   );
 };
 
