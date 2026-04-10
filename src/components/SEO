@@ -31,17 +31,17 @@ const SEO: React.FC<SEOProps> = ({ title, description, image }) => {
       meta.setAttribute("content", content);
     };
 
-    // 🔥 GOOGLE SEO
+    // 🔥 GOOGLE SEO - ALTERADO para Australia
     setMeta("description", description);
     setMeta("robots", "index, follow");
-    setMeta("author", "Praise FM Sydney");
+    setMeta("author", "Praise FM Australia");
 
-    // 🔥 OPEN GRAPH
+    // 🔥 OPEN GRAPH - ALTERADO para Australia
     setMeta("og:title", title, true);
     setMeta("og:description", description, true);
     setMeta("og:image", image || DEFAULT_IMAGE, true);
     setMeta("og:type", "website", true);
-    setMeta("og:site_name", "Praise FM Sydney", true);
+    setMeta("og:site_name", "Praise FM Australia", true);
     setMeta("og:url", SITE_URL, true);
     setMeta("og:locale", "en_AU", true);
 
@@ -60,7 +60,7 @@ const SEO: React.FC<SEOProps> = ({ title, description, image }) => {
     }
     link.setAttribute("href", SITE_URL);
 
-    // 🔥 SCHEMA ORG (rádio profissional)
+    // 🔥 SCHEMA ORG (rádio profissional) - ALTERADO para Australia
     const scriptId = "schema-org";
     let existingScript = document.getElementById(scriptId);
 
@@ -73,11 +73,11 @@ const SEO: React.FC<SEOProps> = ({ title, description, image }) => {
     script.innerHTML = JSON.stringify({
       "@context": "https://schema.org",
       "@type": "RadioStation",
-      "name": "Praise FM Sydney",
+      "name": "Praise FM Australia",
       "url": SITE_URL,
       "logo": image || DEFAULT_IMAGE,
       "sameAs": [
-        "https://instagram.com/",
+        "https://www.instagram.com/praisefmaustralia/",
         "https://facebook.com/"
       ],
       "areaServed": {
