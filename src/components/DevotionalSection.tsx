@@ -1,15 +1,24 @@
-
 import React from 'react';
 import { Mic2, ChevronRight, Play, Clock, Check } from 'lucide-react';
 import { DEVOTIONAL_PODCASTS } from '../constants';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+// Definindo o tipo do podcast localmente
+interface Podcast {
+  id: string;
+  title: string;
+  category: string;
+  duration: string;
+  image: string;
+  author: string;
+}
+
 const DevotionalSection: React.FC = () => {
   const { toggleFavorite, isFavorite, user } = useAuth();
   const navigate = useNavigate();
 
-  const handleListenLater = (e: React.MouseEvent, podcast: any) => {
+  const handleListenLater = (e: React.MouseEvent, podcast: Podcast) => {
     e.stopPropagation();
     if (!user) {
       navigate('/login');
@@ -43,7 +52,7 @@ const DevotionalSection: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {DEVOTIONAL_PODCASTS.map((podcast) => {
+          {DEVOTIONAL_PODCASTS.map((podcast: Podcast) => {
             const saved = isFavorite(podcast.id);
             return (
               <div key={podcast.id} className="group cursor-pointer bg-white dark:bg-[#121212] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 dark:border-white/5">
@@ -63,7 +72,6 @@ const DevotionalSection: React.FC = () => {
                       {podcast.category}
                     </span>
                   </div>
-                  {/* Listen Later Floating Button */}
                   <button 
                     onClick={(e) => handleListenLater(e, podcast)}
                     className={`absolute top-4 right-4 p-3 rounded-full backdrop-blur-md transition-all z-10 ${saved ? 'bg-[#ff6600] text-white opacity-100' : 'bg-black/20 text-white opacity-0 group-hover:opacity-100 hover:bg-black/40'}`}

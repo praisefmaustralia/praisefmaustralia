@@ -8,6 +8,17 @@ export interface Program {
   image: string;
 }
 
+// Adicione esta interface Show
+export interface Show {
+  id: number;
+  title: string;
+  host: string;
+  startTime: string;
+  endTime: string;
+  image: string;
+  days: number[]; // 0 = Domingo, 1 = Segunda, etc.
+}
+
 export interface Podcast {
   id: string;
   title: string;
