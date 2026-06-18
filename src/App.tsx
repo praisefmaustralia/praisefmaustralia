@@ -28,8 +28,8 @@ import AppHomePage from './pages/AppHomePage';
 import { SCHEDULES } from './constants';
 import { Program } from './types';
 
-const STREAM_URL = 'https://stream.zeno.fm/hvwifp8ezc6tv';
-const METADATA_URL = 'https://api.zeno.fm/mounts/metadata/subscribe/hvwifp8ezc6tv';
+const STREAM_URL = 'https://stream.zeno.fm/vku09lx2rkntv';
+const METADATA_URL = 'https://api.zeno.fm/mounts/metadata/subscribe/vku09lx2rkntv';
 
 const BLOCKED_METADATA_KEYWORDS = [
   'praise fm', 'praisefm', 'commercial', 'spot', 'promo', 'ident', 'sweeper',
