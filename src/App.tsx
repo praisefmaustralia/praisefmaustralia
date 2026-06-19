@@ -52,10 +52,21 @@ interface LiveMetadata {
   isMusic?: boolean
 }
 
-const formatToAmPm = (time?: string) => {
+const formatToAmPm = (time?: string | Date) => {
   if (!time) return ''
 
-  const [hourRaw, minuteRaw] = time.split(':').map(Number)
+  let hourRaw: number
+  let minuteRaw: number
+
+  if (typeof time === 'string') {
+    const [hour, minute] = time.split(':').map(Number)
+    hourRaw = hour
+    minuteRaw = minute
+  } else {
+    hourRaw = time.getHours()
+    minuteRaw = time.getMinutes()
+  }
+
   const hour = hourRaw === 0 ? 12 : hourRaw > 12 ? hourRaw - 12 : hourRaw
   const minute = String(minuteRaw || 0).padStart(2, '0')
   const period = hourRaw >= 12 ? 'PM' : 'AM'
@@ -63,7 +74,7 @@ const formatToAmPm = (time?: string) => {
   return `${hour}:${minute} ${period}`
 }
 
-const formatRangeToAmPm = (start?: string, end?: string) => {
+const formatRangeToAmPm = (start?: string | Date, end?: string | Date) => {
   if (!start || !end) return '24/7'
   return `${formatToAmPm(start)} - ${formatToAmPm(end)}`
 }
@@ -105,8 +116,16 @@ const getProgramProgress = (program?: Program) => {
 
   const { total } = getSydneyDayAndTotalMinutes()
 
-  const [sH, sM] = program.startTime.split(':').map(Number)
-  const [eH, eM] = program.endTime.split(':').map(Number)
+  const timeToHM = (t: string | Date) => {
+    if (typeof t === 'string') {
+      return t.split(':').map(Number)
+    }
+    const d = new Date(t)
+    return [d.getHours(), d.getMinutes()]
+  }
+
+  const [sH, sM] = timeToHM(program.startTime)
+  const [eH, eM] = timeToHM(program.endTime)
 
   const start = sH * 60 + sM
   let end = eH * 60 + eM
@@ -201,7 +220,16 @@ const HomeBBC = ({
                 <span className="font-black text-orange-500">LIVE</span>
                 <span className="text-gray-500">·</span>
                 <span className="text-gray-500">
-                  {currentProgram ? formatRangeToAmPm(currentProgram.startTime, currentProgram.endTime) : '24/7'}
+                  {currentProgram
+                    ? formatRangeToAmPm(
+                        typeof currentProgram.startTime === 'string'
+                          ? currentProgram.startTime
+                          : currentProgram.startTime?.toISOString(),
+                        typeof currentProgram.endTime === 'string'
+                          ? currentProgram.endTime
+                          : currentProgram.endTime?.toISOString()
+                      )
+                    : '24/7'}
                 </span>
               </div>
 
@@ -300,8 +328,14 @@ const AppContent: React.FC = () => {
   const { currentProgram, queue } = useMemo(() => {
     const schedule = SCHEDULES[day] || SCHEDULES[1] || []
     const currentIndex = schedule.findIndex((p: Program) => {
-      const [sH, sM] = p.startTime.split(':').map(Number)
-      const [eH, eM] = p.endTime.split(':').map(Number)
+      const [sH, sM] =
+        typeof p.startTime === 'string'
+          ? p.startTime.split(':').map(Number)
+          : [p.startTime.getHours(), p.startTime.getMinutes()]
+      const [eH, eM] =
+        typeof p.endTime === 'string'
+          ? p.endTime.split(':').map(Number)
+          : [p.endTime.getHours(), p.endTime.getMinutes()]
 
       const start = sH * 60 + sM
       let end = eH * 60 + eM
@@ -433,7 +467,7 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col pb-[120px] bg-white dark:bg-[#121212] transition-colors">
-      <SEO title={seo.title} description={seo.description} url={window.location.href} />
+      <SEO title={seo.title} description={seo.description} />
 
       <Navbar
         activeTab={location.pathname === '/' ? 'home' : location.pathname.split('/')[1]}
