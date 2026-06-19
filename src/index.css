@@ -18,33 +18,42 @@
 .eyebrow {
   color: #ff6600;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
 }
 
 .recently-played__header h2 {
   color: white;
-  font-size: 2.5rem;
-  font-weight: 800;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1;
+  margin: 0;
 }
 
 .recently-played__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
 }
 
 .recently-played__card {
-  background: #111;
-  border-radius: 20px;
+  background: #181818;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 14px;
   overflow: hidden;
-  border: 1px solid #222;
 }
 
 .recently-played__art {
-  aspect-ratio: 1;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 18px;
   overflow: hidden;
+  background: linear-gradient(135deg, #ff6600, #222);
+  display: grid;
+  place-items: center;
+  margin-bottom: 14px;
 }
 
 .recently-played__art img {
@@ -53,14 +62,34 @@
   object-fit: cover;
 }
 
+.recently-played__art span {
+  color: white;
+  font-size: 2rem;
+  font-weight: 900;
+}
+
 .recently-played__card h3 {
   color: white;
   font-size: 1rem;
-  font-weight: 700;
-  padding: 1rem 1rem 0.25rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0 0 6px;
 }
 
 .recently-played__card p {
-  color: #999;
-  padding: 0 1rem 1rem;
+  color: #aaa;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .recently-played__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .recently-played__grid {
+    grid-template-columns: 1fr;
+  }
 }
