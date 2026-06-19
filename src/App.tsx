@@ -468,8 +468,7 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col pb-[120px] bg-white dark:bg-[#121212] transition-colors">
-      <SEO title={seo.title} description={seo.description} url={window.location.href} />
-
+      <SEO title={seo.title} description={seo.description} />
       <Navbar
         activeTab={location.pathname === '/' ? 'home' : location.pathname.split('/')[1]}
         theme={theme}
