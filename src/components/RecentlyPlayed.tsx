@@ -15,43 +15,11 @@ interface RecentlyPlayedProps {
 const RecentlyPlayed: React.FC<RecentlyPlayedProps> = ({ tracks }) => {
   const [artworks, setArtworks] = useState<Record<string, string>>({})
 
-  const blockedKeywords = [
-    'commercial',
-    'promo',
-    'sweeper',
-    'station id',
-    'ident',
-    'program',
-    'show',
-    'radio',
-    'live',
-    'talk',
-    'news',
-    'interview',
-    'announcement',
-    'prayer',
-    'devotional',
-  ]
-
-  const isValidMusic = (track: Track) => {
-    const text = `${track.artist} ${track.title}`.toLowerCase()
-
-    if (blockedKeywords.some((word) => text.includes(word))) return false
-    if (!track.artist || !track.title) return false
-    if (track.artist.length < 2 || track.title.length < 2) return false
-    if (track.artist === track.title) return false
-
-    return true
-  }
-
-  const displayedTracks = Array.isArray(tracks)
-    ? tracks.filter(isValidMusic).slice(0, 4)
-    : []
+  const displayedTracks = Array.isArray(tracks) ? tracks.slice(0, 4) : []
 
   useEffect(() => {
     const fetchArtworks = async () => {
       const newArtworks = { ...artworks }
-      let changed = false
 
       await Promise.all(
         displayedTracks.map(async (track) => {
@@ -60,43 +28,26 @@ const RecentlyPlayed: React.FC<RecentlyPlayedProps> = ({ tracks }) => {
           if (newArtworks[key] || track.artwork) return
 
           try {
-            const url = `https://itunes.apple.com/search?term=${encodeURIComponent(
-              `${track.artist} ${track.title}`
-            )}&media=music&limit=1`
+            const res = await fetch(
+              `https://itunes.apple.com/search?term=${encodeURIComponent(
+                `${track.artist} ${track.title}`
+              )}&media=music&limit=1`
+            )
 
-            const res = await fetch(url)
-            let image = ''
+            const data = await res.json()
+            const image = data.results?.[0]?.artworkUrl100?.replace(
+              '100x100bb',
+              '600x600bb'
+            )
 
-            if (res.ok) {
-              const data = await res.json()
-
-              if (data.results?.length) {
-                image =
-                  data.results[0].artworkUrl100?.replace(
-                    '100x100bb',
-                    '300x300bb'
-                  ) || ''
-              }
-            }
-
-            if (!image) {
-              image = `https://picsum.photos/seed/${encodeURIComponent(
-                key
-              )}/300/300`
-            }
-
-            newArtworks[key] = image
-            changed = true
+            if (image) newArtworks[key] = image
           } catch {
-            newArtworks[key] = `https://picsum.photos/seed/${encodeURIComponent(
-              key
-            )}/300/300`
-            changed = true
+            // ignore
           }
         })
       )
 
-      if (changed) setArtworks(newArtworks)
+      setArtworks(newArtworks)
     }
 
     if (displayedTracks.length > 0) fetchArtworks()
@@ -125,18 +76,27 @@ const RecentlyPlayed: React.FC<RecentlyPlayedProps> = ({ tracks }) => {
               const key = `${track.artist}-${track.title}`
 
               const artwork =
-                artworks[key] ||
                 track.artwork ||
+                artworks[key] ||
                 `https://picsum.photos/seed/${encodeURIComponent(
                   key
-                )}/300/300`
+                )}/600/600`
 
               return (
                 <div
                   key={key}
-                  className="flex items-center justify-between py-4 px-4 border-b border-gray-100 dark:border-white/5 hover:bg-gray-100 dark:hover:bg-white/[0.03] transition"
+                  className="relative overflow-hidden flex items-center justify-between py-4 px-4 border-b border-gray-100 dark:border-white/5 hover:bg-gray-100 dark:hover:bg-white/[0.03] transition"
                 >
-                  <div className="flex items-center gap-4 min-w-0">
+                  <div
+                    className="absolute inset-0 opacity-[0.08] blur-3xl scale-125"
+                    style={{
+                      backgroundImage: `url(${artwork})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                    }}
+                  />
+
+                  <div className="relative z-10 flex items-center gap-4 min-w-0 flex-1">
                     <span className="text-sm text-gray-400 w-5 font-medium">
                       {idx + 1}
                     </span>
@@ -159,11 +119,9 @@ const RecentlyPlayed: React.FC<RecentlyPlayedProps> = ({ tracks }) => {
                     </div>
                   </div>
 
-                  <div className="hidden md:flex items-center">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-orange-500">
-                      Played
-                    </span>
-                  </div>
+                  <span className="relative z-10 hidden md:block text-[11px] font-bold uppercase tracking-wider text-orange-500">
+                    Played
+                  </span>
                 </div>
               )
             })}
