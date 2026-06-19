@@ -9,7 +9,7 @@ interface SEOProps {
 const DEFAULT_IMAGE =
   "https://res.cloudinary.com/ddhu86ukg/image/upload/v1774221235/SVGAUS_vnyvbf.webp";
 
-const SITE_URL = "https://praisefmradio.vercel.app";
+const SITE_URL = "https://praisefmaustralia.vercel.app";
 
 const SEO: React.FC<SEOProps> = ({ title, description, image }) => {
   useEffect(() => {
