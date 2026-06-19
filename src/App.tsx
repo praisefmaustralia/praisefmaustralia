@@ -293,7 +293,7 @@ const AppContent: React.FC = () => {
 
             if (alreadyFirst) return history
 
-            return [meta, ...history].slice(0, 10)
+            return [meta, ...history].slice(0, 4)
           })
 
           return meta
