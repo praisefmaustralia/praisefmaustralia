@@ -53,21 +53,26 @@ interface LiveMetadata {
   isMusic?: boolean
 }
 
-const formatToAmPm = (time?: string | Date) => {
+const getArtwork = async (artist: string, title: string) => {
+  try {
+    const query = encodeURIComponent(`${artist} ${title}`)
+    const res = await fetch(
+      `https://itunes.apple.com/search?term=${query}&entity=song&limit=1`
+    )
+
+    const data = await res.json()
+    const artwork = data?.results?.[0]?.artworkUrl100
+
+    return artwork ? artwork.replace('100x100bb', '600x600bb') : DEFAULT_COVER
+  } catch {
+    return DEFAULT_COVER
+  }
+}
+
+const formatToAmPm = (time?: string) => {
   if (!time) return ''
 
-  let hourRaw: number
-  let minuteRaw: number
-
-  if (typeof time === 'string') {
-    const [hour, minute] = time.split(':').map(Number)
-    hourRaw = hour
-    minuteRaw = minute
-  } else {
-    hourRaw = time.getHours()
-    minuteRaw = time.getMinutes()
-  }
-
+  const [hourRaw, minuteRaw] = time.split(':').map(Number)
   const hour = hourRaw === 0 ? 12 : hourRaw > 12 ? hourRaw - 12 : hourRaw
   const minute = String(minuteRaw || 0).padStart(2, '0')
   const period = hourRaw >= 12 ? 'PM' : 'AM'
@@ -75,7 +80,7 @@ const formatToAmPm = (time?: string | Date) => {
   return `${hour}:${minute} ${period}`
 }
 
-const formatRangeToAmPm = (start?: string | Date, end?: string | Date) => {
+const formatRangeToAmPm = (start?: string, end?: string) => {
   if (!start || !end) return '24/7'
   return `${formatToAmPm(start)} - ${formatToAmPm(end)}`
 }
@@ -117,16 +122,8 @@ const getProgramProgress = (program?: Program) => {
 
   const { total } = getSydneyDayAndTotalMinutes()
 
-  const timeToHM = (t: string | Date) => {
-    if (typeof t === 'string') {
-      return t.split(':').map(Number)
-    }
-    const d = new Date(t)
-    return [d.getHours(), d.getMinutes()]
-  }
-
-  const [sH, sM] = timeToHM(program.startTime)
-  const [eH, eM] = timeToHM(program.endTime)
+  const [sH, sM] = program.startTime.split(':').map(Number)
+  const [eH, eM] = program.endTime.split(':').map(Number)
 
   const start = sH * 60 + sM
   let end = eH * 60 + eM
@@ -221,16 +218,7 @@ const HomeBBC = ({
                 <span className="font-black text-orange-500">LIVE</span>
                 <span className="text-gray-500">·</span>
                 <span className="text-gray-500">
-                  {currentProgram
-                    ? formatRangeToAmPm(
-                        typeof currentProgram.startTime === 'string'
-                          ? currentProgram.startTime
-                          : currentProgram.startTime?.toISOString(),
-                        typeof currentProgram.endTime === 'string'
-                          ? currentProgram.endTime
-                          : currentProgram.endTime?.toISOString()
-                      )
-                    : '24/7'}
+                  {currentProgram ? formatRangeToAmPm(currentProgram.startTime, currentProgram.endTime) : '24/7'}
                 </span>
               </div>
 
@@ -329,14 +317,8 @@ const AppContent: React.FC = () => {
   const { currentProgram, queue } = useMemo(() => {
     const schedule = SCHEDULES[day] || SCHEDULES[1] || []
     const currentIndex = schedule.findIndex((p: Program) => {
-      const [sH, sM] =
-        typeof p.startTime === 'string'
-          ? p.startTime.split(':').map(Number)
-          : [p.startTime.getHours(), p.startTime.getMinutes()]
-      const [eH, eM] =
-        typeof p.endTime === 'string'
-          ? p.endTime.split(':').map(Number)
-          : [p.endTime.getHours(), p.endTime.getMinutes()]
+      const [sH, sM] = p.startTime.split(':').map(Number)
+      const [eH, eM] = p.endTime.split(':').map(Number)
 
       const start = sH * 60 + sM
       let end = eH * 60 + eM
@@ -361,57 +343,61 @@ const AppContent: React.FC = () => {
   }, [day, total])
 
   useEffect(() => {
-  const audio = new Audio()
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+    localStorage.setItem('praise-theme-au', theme)
+  }, [theme])
 
-  audio.src = STREAM_URL
-  audio.crossOrigin = 'anonymous'
-  audio.preload = 'none'
-  audio.volume = parseFloat(localStorage.getItem('praise-volume-au') || '0.8')
+  useEffect(() => {
+    const audio = new Audio()
+    audio.src = STREAM_URL
+    audio.crossOrigin = 'anonymous'
+    audio.preload = 'none'
+    audio.volume = parseFloat(localStorage.getItem('praise-volume-au') || '0.8')
 
-  const handlePlay = () => setIsPlaying(true)
-  const handlePause = () => setIsPlaying(false)
-  const handleError = () => {
-    console.error('Audio error:', audio.error)
-    setIsPlaying(false)
-  }
+    const handlePlay = () => setIsPlaying(true)
+    const handlePause = () => setIsPlaying(false)
+    const handleError = () => {
+      console.error('Audio error:', audio.error)
+      setIsPlaying(false)
+    }
 
-  audio.addEventListener('play', handlePlay)
-  audio.addEventListener('pause', handlePause)
-  audio.addEventListener('error', handleError)
+    audio.addEventListener('play', handlePlay)
+    audio.addEventListener('pause', handlePause)
+    audio.addEventListener('error', handleError)
 
-  audioRef.current = audio
+    audioRef.current = audio
 
-  return () => {
-    audio.removeEventListener('play', handlePlay)
-    audio.removeEventListener('pause', handlePause)
-    audio.removeEventListener('error', handleError)
-    audio.pause()
-    audio.src = ''
-    audioRef.current = null
-  }
-}, [])
+    return () => {
+      audio.removeEventListener('play', handlePlay)
+      audio.removeEventListener('pause', handlePause)
+      audio.removeEventListener('error', handleError)
+      audio.pause()
+      audio.src = ''
+      audioRef.current = null
+    }
+  }, [])
 
   const togglePlayback = () => {
-  const audio = audioRef.current
-  if (!audio) return
+    const audio = audioRef.current
+    if (!audio) return
 
-  if (isPlaying) {
-    audio.pause()
-    return
+    if (isPlaying) {
+      audio.pause()
+      return
+    }
+
+    audio.load()
+
+    audio
+      .play()
+      .then(() => {
+        setIsPlaying(true)
+      })
+      .catch((error) => {
+        console.error('Audio play failed:', error)
+        setIsPlaying(false)
+      })
   }
-
-  audio.load()
-
-  audio
-    .play()
-    .then(() => {
-      setIsPlaying(true)
-    })
-    .catch((error) => {
-      console.error('Audio play failed:', error)
-      setIsPlaying(false)
-    })
-}
 
   const openProgramPage = (program: Program) => {
     setSelectedProgram(program)
@@ -444,11 +430,25 @@ const AppContent: React.FC = () => {
           const meta: LiveMetadata = {
             artist,
             title,
+            artwork: DEFAULT_COVER,
             playedAt: new Date(),
             isMusic: true
           }
 
+          getArtwork(artist, title).then((artwork) => {
+            const updatedMeta = { ...meta, artwork }
+
+            setLiveMetadata(updatedMeta)
+
+            setTrackHistory((history) =>
+              history.map((item) =>
+                item.artist === artist && item.title === title ? updatedMeta : item
+              )
+            )
+          })
+
           setTrackHistory((history) => [meta, ...history].slice(0, 10))
+
           return meta
         })
       } catch {}
@@ -468,7 +468,7 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col pb-[120px] bg-white dark:bg-[#121212] transition-colors">
-      <SEO title={seo.title} description={seo.description} />
+      <SEO title={seo.title} description={seo.description} url={window.location.href} />
 
       <Navbar
         activeTab={location.pathname === '/' ? 'home' : location.pathname.split('/')[1]}
