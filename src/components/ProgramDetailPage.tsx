@@ -1,5 +1,17 @@
-import { ArrowLeft, Calendar, Clock, Headphones, Mic2, Music2, Play } from 'lucide-react'
+import { useRef, useState } from 'react'
+import {
+  ArrowLeft,
+  Calendar,
+  Clock,
+  Headphones,
+  Mic2,
+  Music2,
+  Pause,
+  Play
+} from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
+
+const STREAM_URL = 'https://stream.zeno.fm/marglwedbnltv'
 
 const PROGRAMS = [
   {
@@ -9,10 +21,23 @@ const PROGRAMS = [
     artist: 'Praise FM Australia',
     time: '6:00 AM - 9:00 AM',
     image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/aussie-morning_wo7qjl.webp',
-    description: 'Start your day with worship, encouragement, fresh Christian music and uplifting moments for Australia.',
+    description:
+      'Start your day with worship, encouragement, fresh Christian music and uplifting moments for Australia.',
     recentlyPlayed: [
-      { title: 'Good Morning Mercy', artist: 'Jason Crabb', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/aussie-morning_wo7qjl.webp', time: '07:22 AM' },
-      { title: 'Praise', artist: 'Elevation Worship', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/worship_q6dsql.webp', time: '07:15 AM' }
+      {
+        title: 'Good Morning Mercy',
+        artist: 'Jason Crabb',
+        image:
+          'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/aussie-morning_wo7qjl.webp',
+        time: '07:22 AM'
+      },
+      {
+        title: 'Praise',
+        artist: 'Elevation Worship',
+        image:
+          'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/worship_q6dsql.webp',
+        time: '07:15 AM'
+      }
     ]
   },
   {
@@ -21,10 +46,18 @@ const PROGRAMS = [
     presenter: 'Olivia Blake',
     artist: 'Praise FM Australia',
     time: '9:00 AM - 12:00 PM',
-    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/worship_q6dsql.webp',
-    description: 'Powerful worship songs, peaceful moments and music that keeps the focus on faith.',
+    image:
+      'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/worship_q6dsql.webp',
+    description:
+      'Powerful worship songs, peaceful moments and music that keeps the focus on faith.',
     recentlyPlayed: [
-      { title: 'The Blessing', artist: 'Kari Jobe', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/worship_q6dsql.webp', time: '09:45 AM' }
+      {
+        title: 'The Blessing',
+        artist: 'Kari Jobe',
+        image:
+          'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/worship_q6dsql.webp',
+        time: '09:45 AM'
+      }
     ]
   },
   {
@@ -33,10 +66,18 @@ const PROGRAMS = [
     presenter: 'Kelly Fergusson',
     artist: 'Praise FM Australia',
     time: '12:00 PM - 3:00 PM',
-    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/midday-journey_iebims.webp',
-    description: 'Encouragement, worship and positive music through the middle of the day.',
+    image:
+      'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/midday-journey_iebims.webp',
+    description:
+      'Encouragement, worship and positive music through the middle of the day.',
     recentlyPlayed: [
-      { title: 'Gratitude', artist: 'Brandon Lake', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/midday-journey_iebims.webp', time: '12:35 PM' }
+      {
+        title: 'Gratitude',
+        artist: 'Brandon Lake',
+        image:
+          'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/midday-journey_iebims.webp',
+        time: '12:35 PM'
+      }
     ]
   },
   {
@@ -45,10 +86,18 @@ const PROGRAMS = [
     presenter: 'Jarrah',
     artist: 'Praise FM Australia',
     time: '5:00 PM - 6:00 PM',
-    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831667/next-wave_zsxmpi.webp',
-    description: 'Discover the next generation of Christian artists, new worship sounds and fresh voices.',
+    image:
+      'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831667/next-wave_zsxmpi.webp',
+    description:
+      'Discover the next generation of Christian artists, new worship sounds and fresh voices.',
     recentlyPlayed: [
-      { title: 'The Author', artist: 'Brandon Lake', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831667/next-wave_zsxmpi.webp', time: '07:23 PM' }
+      {
+        title: 'The Author',
+        artist: 'Brandon Lake',
+        image:
+          'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831667/next-wave_zsxmpi.webp',
+        time: '07:23 PM'
+      }
     ]
   },
   {
@@ -57,21 +106,59 @@ const PROGRAMS = [
     presenter: 'Sophie Mitchell',
     artist: 'Praise FM Australia',
     time: '6:00 PM - 8:00 PM',
-    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/road-to-home_rjgcr9.webp',
-    description: 'The perfect soundtrack for the journey home with worship, gospel favourites and feel-good radio.',
+    image:
+      'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/road-to-home_rjgcr9.webp',
+    description:
+      'The perfect soundtrack for the journey home with worship, gospel favourites and feel-good radio.',
     recentlyPlayed: [
-      { title: 'Take You At Your Word', artist: 'Cody Carnes', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/road-to-home_rjgcr9.webp', time: '06:20 PM' }
+      {
+        title: 'Take You At Your Word',
+        artist: 'Cody Carnes',
+        image:
+          'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/road-to-home_rjgcr9.webp',
+        time: '06:20 PM'
+      }
     ]
   }
 ]
 
 export default function ProgramDetailPage() {
   const { slug } = useParams()
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
 
-  const program = PROGRAMS.find((item) => item.slug === slug) || PROGRAMS[3]
+  const program = PROGRAMS.find((item) => item.slug === slug) || PROGRAMS[0]
+
+  const currentIndex = PROGRAMS.findIndex((item) => item.slug === program.slug)
+  const nextProgram = PROGRAMS[(currentIndex + 1) % PROGRAMS.length]
+
+  const togglePlay = async () => {
+    if (!audioRef.current) return
+
+    if (isPlaying) {
+      audioRef.current.pause()
+      setIsPlaying(false)
+      return
+    }
+
+    try {
+      await audioRef.current.play()
+      setIsPlaying(true)
+    } catch (error) {
+      console.error('Unable to play stream:', error)
+    }
+  }
 
   return (
     <main className="bg-[#0b0b0b] text-white">
+      <audio
+        ref={audioRef}
+        src={STREAM_URL}
+        preload="none"
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+      />
+
       <section className="border-b border-white/10 bg-gradient-to-br from-[#15100b] via-[#0b0b0b] to-black">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-20">
           <Link
@@ -92,7 +179,9 @@ export default function ProgramDetailPage() {
 
               <div className="absolute -bottom-5 left-6 bg-white text-black rounded-2xl px-6 py-3 flex items-center gap-3 shadow-xl">
                 <Headphones size={18} className="text-orange-500" />
-                <span className="text-sm font-black uppercase">Live Now</span>
+                <span className="text-sm font-black uppercase">
+                  Live Now
+                </span>
               </div>
             </div>
 
@@ -129,9 +218,17 @@ export default function ProgramDetailPage() {
               </div>
 
               <div className="flex flex-wrap gap-4">
-                <button className="inline-flex items-center gap-3 bg-orange-500 hover:bg-orange-600 text-white px-8 py-5 rounded-2xl font-black transition shadow-xl">
-                  <Play size={22} fill="currentColor" />
-                  Listen Live
+                <button
+                  onClick={togglePlay}
+                  className="inline-flex items-center gap-3 bg-orange-500 hover:bg-orange-600 text-white px-8 py-5 rounded-2xl font-black transition shadow-xl"
+                >
+                  {isPlaying ? (
+                    <Pause size={22} fill="currentColor" />
+                  ) : (
+                    <Play size={22} fill="currentColor" />
+                  )}
+
+                  {isPlaying ? 'Pause Live' : 'Listen Live'}
                 </button>
 
                 <Link
@@ -181,7 +278,7 @@ export default function ProgramDetailPage() {
 
               {program.recentlyPlayed.map((track, index) => (
                 <div
-                  key={track.title}
+                  key={`${track.title}-${track.time}`}
                   className={`flex items-center gap-4 px-6 py-5 border-t border-white/10 ${
                     index === 0 ? 'bg-orange-500/10' : ''
                   }`}
@@ -247,16 +344,16 @@ export default function ProgramDetailPage() {
               </p>
 
               <h3 className="text-2xl font-black mb-2">
-                Road To Home
+                {nextProgram.title}
               </h3>
 
               <p className="text-sm text-blue-200 mb-5">
-                Sophie Mitchell
+                {nextProgram.presenter}
               </p>
 
               <span className="inline-flex items-center gap-2 bg-white/5 rounded-full px-4 py-2 text-sm font-black">
                 <Clock size={16} className="text-orange-500" />
-                6:00 PM
+                {nextProgram.time.split(' - ')[0]}
               </span>
             </div>
 
@@ -273,9 +370,17 @@ export default function ProgramDetailPage() {
                 Worship, gospel, Christian hits and inspiring moments streaming 24/7 across Australia.
               </p>
 
-              <button className="w-full bg-white text-black rounded-2xl py-4 font-black inline-flex items-center justify-center gap-3 hover:bg-black hover:text-white transition">
-                <Play size={20} fill="currentColor" />
-                Listen Now
+              <button
+                onClick={togglePlay}
+                className="w-full bg-white text-black rounded-2xl py-4 font-black inline-flex items-center justify-center gap-3 hover:bg-black hover:text-white transition"
+              >
+                {isPlaying ? (
+                  <Pause size={20} fill="currentColor" />
+                ) : (
+                  <Play size={20} fill="currentColor" />
+                )}
+
+                {isPlaying ? 'Pause Now' : 'Listen Now'}
               </button>
             </div>
           </aside>
