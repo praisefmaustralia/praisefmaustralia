@@ -77,7 +77,7 @@ const presenters: Presenter[] = [
 const PresentersPage: React.FC<PresentersPageProps> = () => {
   return (
     <main className="min-h-screen bg-white dark:bg-black">
-      <section className="max-w-7xl mx-auto px-4 py-12">
+      <section className="bg-white dark:bg-black">
         <div className="mb-10">
           <p className="text-sm font-bold uppercase tracking-[0.25em] text-orange-500 mb-3">
             Praise FM Australia
