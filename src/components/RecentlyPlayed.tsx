@@ -1,104 +1,109 @@
-import React from 'react'
-import { Music2, Radio } from 'lucide-react'
+// src/components/RecentlyPlayed.tsx
 
-interface Track {
-  artist?: string
-  title?: string
-  artwork?: string
-  cover?: string
-  image?: string
-  playedAt?: Date | string
+import { useEffect, useState } from "react";
+
+type Track = {
+  title: string;
+  artist: string;
+  image?: string;
+  playedAt: string;
+};
+
+const METADATA_URL =
+  "https://api.zeno.fm/mounts/metadata/subscribe/marglwedbnltv";
+
+function splitTrack(raw: string) {
+  if (!raw) return { artist: "Praise FM Australia", title: "Live Worship" };
+
+  const parts = raw.split(" - ");
+
+  if (parts.length >= 2) {
+    return {
+      artist: parts[0].trim(),
+      title: parts.slice(1).join(" - ").trim(),
+    };
+  }
+
+  return {
+    artist: "Praise FM Australia",
+    title: raw.trim(),
+  };
 }
 
-interface RecentlyPlayedProps {
-  tracks: Track[]
-}
+export default function RecentlyPlayed() {
+  const [tracks, setTracks] = useState<Track[]>([]);
 
-const FALLBACK_COVER =
-  'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774221235/SVGAUS_qmzryk.png'
+  useEffect(() => {
+    const eventSource = new EventSource(METADATA_URL);
 
-const RecentlyPlayed: React.FC<RecentlyPlayedProps> = ({ tracks }) => {
-  const items = tracks.slice(0, 6)
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+
+        const rawTitle =
+          data?.streamTitle ||
+          data?.title ||
+          data?.metadata?.streamTitle ||
+          "";
+
+        if (!rawTitle) return;
+
+        const { artist, title } = splitTrack(rawTitle);
+
+        setTracks((prev) => {
+          const alreadyFirst =
+            prev[0]?.artist === artist && prev[0]?.title === title;
+
+          if (alreadyFirst) return prev;
+
+          const nextTrack: Track = {
+            artist,
+            title,
+            playedAt: new Date().toISOString(),
+          };
+
+          return [nextTrack, ...prev].slice(0, 4);
+        });
+      } catch {
+        // evita quebrar a UI se o Zeno mandar algo fora do padrão
+      }
+    };
+
+    eventSource.onerror = () => {
+      eventSource.close();
+    };
+
+    return () => eventSource.close();
+  }, []);
+
+  if (tracks.length === 0) {
+    return null;
+  }
 
   return (
-    <section className="py-14 bg-white dark:bg-[#000000] border-t border-gray-100 dark:border-white/10">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-end justify-between mb-7">
-          <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.25em] text-[#ff6600] mb-2">
-              Live History
-            </p>
+    <section className="recently-played">
+      <div className="recently-played__header">
+        <p className="eyebrow">Recently Played</p>
+        <h2>On Praise FM Australia</h2>
+      </div>
 
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-gray-950 dark:text-white">
-              Recently Played
-            </h2>
-          </div>
-
-          <div className="hidden md:flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400">
-            <Radio className="w-4 h-4 text-[#ff6600]" />
-            Last {items.length || 0} songs
-          </div>
-        </div>
-
-        {items.length === 0 ? (
-          <div className="bg-gray-50 dark:bg-white/5 rounded-2xl border border-gray-100 dark:border-white/10 p-8 flex items-center gap-5">
-            <div className="w-14 h-14 rounded-full bg-[#ff6600] text-white flex items-center justify-center">
-              <Music2 className="w-7 h-7" />
+      <div className="recently-played__grid">
+        {tracks.map((track, index) => (
+          <article
+            className="recently-played__card"
+            key={`${track.artist}-${track.title}-${index}`}
+          >
+            <div className="recently-played__art">
+              <span>{index + 1}</span>
             </div>
 
             <div>
-              <h3 className="font-black text-xl text-gray-950 dark:text-white">
-                Waiting for live metadata
-              </h3>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                Songs will appear here as soon as the stream sends the next track.
-              </p>
+              <h3>{track.title}</h3>
+              <p>{track.artist}</p>
             </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {items.map((track, idx) => {
-              const cover =
-                track.artwork || track.cover || track.image || FALLBACK_COVER
-
-              return (
-                <article
-                  key={`${track.artist}-${track.title}-${idx}`}
-                  className="group bg-gray-50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 border border-gray-100 dark:border-white/10 rounded-2xl p-4 flex items-center gap-4 transition-all hover:shadow-xl"
-                >
-                  <div className="relative flex-shrink-0">
-                    <img
-                      src={cover}
-                      alt={track.title || 'Recently played'}
-                      className="w-20 h-20 rounded-xl object-cover bg-gray-200 dark:bg-white/10"
-                    />
-
-                    <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-black text-white border-2 border-white dark:border-[#121212] flex items-center justify-center text-sm font-black shadow-lg">
-                      {idx + 1}
-                    </div>
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#ff6600] mb-1">
-                      {idx === 0 ? 'Now Playing' : 'Recently Played'}
-                    </p>
-
-                    <h3 className="font-black text-gray-950 dark:text-white truncate text-lg leading-tight group-hover:text-[#ff6600] transition-colors">
-                      {track.title || 'Song'}
-                    </h3>
-
-                    <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                      {track.artist || 'Artist'}
-                    </p>
-                  </div>
-                </article>
-              )
-            })}
-          </div>
-        )}
+          </article>
+        ))}
       </div>
     </section>
-  )
+  );
 }
-
-export default RecentlyPlayed
