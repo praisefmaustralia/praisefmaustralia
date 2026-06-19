@@ -326,43 +326,57 @@ const AppContent: React.FC = () => {
   }, [day, total])
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark')
-    localStorage.setItem('praise-theme-au', theme)
-  }, [theme])
+  const audio = new Audio()
 
-  useEffect(() => {
-    const audio = new Audio(STREAM_URL)
-    audio.crossOrigin = 'anonymous'
-    audio.preload = 'none'
-    audio.volume = parseFloat(localStorage.getItem('praise-volume-au') || '0.8')
+  audio.src = STREAM_URL
+  audio.crossOrigin = 'anonymous'
+  audio.preload = 'none'
+  audio.volume = parseFloat(localStorage.getItem('praise-volume-au') || '0.8')
 
-    const handlePlay = () => setIsPlaying(true)
-    const handlePause = () => setIsPlaying(false)
+  const handlePlay = () => setIsPlaying(true)
+  const handlePause = () => setIsPlaying(false)
+  const handleError = () => {
+    console.error('Audio error:', audio.error)
+    setIsPlaying(false)
+  }
 
-    audio.addEventListener('play', handlePlay)
-    audio.addEventListener('pause', handlePause)
+  audio.addEventListener('play', handlePlay)
+  audio.addEventListener('pause', handlePause)
+  audio.addEventListener('error', handleError)
 
-    audioRef.current = audio
+  audioRef.current = audio
 
-    return () => {
-      audio.removeEventListener('play', handlePlay)
-      audio.removeEventListener('pause', handlePause)
-      audio.pause()
-      audio.src = ''
-      audioRef.current = null
-    }
-  }, [])
+  return () => {
+    audio.removeEventListener('play', handlePlay)
+    audio.removeEventListener('pause', handlePause)
+    audio.removeEventListener('error', handleError)
+    audio.pause()
+    audio.src = ''
+    audioRef.current = null
+  }
+}, [])
 
   const togglePlayback = () => {
-    if (!audioRef.current) return
+  const audio = audioRef.current
+  if (!audio) return
 
-    if (isPlaying) {
-      audioRef.current.pause()
-      return
-    }
-
-    audioRef.current.play().catch(() => setIsPlaying(false))
+  if (isPlaying) {
+    audio.pause()
+    return
   }
+
+  audio.load()
+
+  audio
+    .play()
+    .then(() => {
+      setIsPlaying(true)
+    })
+    .catch((error) => {
+      console.error('Audio play failed:', error)
+      setIsPlaying(false)
+    })
+}
 
   const openProgramPage = (program: Program) => {
     setSelectedProgram(program)
