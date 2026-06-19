@@ -1,4 +1,15 @@
-import { Program, Show } from './types';
+import { Program } from './types';
+
+type Show = {
+  id: number;
+  title: string;
+  host: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+  image: string;
+  days: number[];
+};
 
 export const COLORS = {
   ACCENT: '#ff6600',

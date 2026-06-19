@@ -1,10 +1,9 @@
-export interface Show {
-  id: number;
-  title: string;
-  host: string;
-  description: string;
-  startTime: string;
-  endTime: string;
-  image: string;
-  days: number[];
+export type Program = {
+  id: string
+  image: string
+  title: string
+  host: string
+  startTime: string | Date
+  endTime: string | Date
+  description: string
 }
