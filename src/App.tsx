@@ -7,6 +7,7 @@ import {
   useLocation,
   useNavigate,
 } from 'react-router-dom'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
@@ -427,6 +428,7 @@ export default function App() {
         <ScrollToTop />
         <AppContent />
       </HashRouter>
+      <SpeedInsights />
     </AuthProvider>
   )
 }
