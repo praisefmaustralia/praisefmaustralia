@@ -2,6 +2,7 @@ declare module 'virtual:pwa-register' {
   export function registerSW(options?: { immediate?: boolean }): void
 }
 
-import { registerSW } from 'virtual:pwa-register'
-
-registerSW({ immediate: true })
+;(async () => {
+  const { registerSW } = await import('virtual:pwa-register')
+  registerSW({ immediate: true })
+})()
