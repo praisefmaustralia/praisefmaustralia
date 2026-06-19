@@ -10,14 +10,9 @@ import ProgramDetail from './components/ProgramDetail';
 import Playlist from './components/Playlist';
 import ScheduleList from './components/ScheduleList';
 import DevotionalPage from './pages/DevotionalPage';
-import LoginPage from './pages/LoginPage';
-import SignUpPage from './pages/SignUpPage';
-import MySoundsPage from './pages/MySoundsPage';
-import ProfilePage from './pages/ProfilePage';
 import FeaturedArtistsPage from './pages/FeaturedArtistsPage';
 import PresentersPage from './pages/PresentersPage';
 import NewReleasesPage from './pages/NewReleasesPage';
-import LiveRecordingsPage from './pages/LiveRecordingsPage';
 import HelpCenterPage from './pages/HelpCenterPage';
 import FeedbackPage from './pages/FeedbackPage';
 import EventsPage from './pages/EventsPage';
@@ -190,13 +185,8 @@ const AppContent: React.FC = () => {
             <Route path="/new-releases" element={<NewReleasesPage />} />
             <Route path="/artists" element={<FeaturedArtistsPage />} />
             <Route path="/presenters" element={<PresentersPage onNavigateToProgram={setSelectedProgram} />} />
-            <Route path="/live-recordings" element={<LiveRecordingsPage />} />
             <Route path="/help" element={<HelpCenterPage />} />
             <Route path="/feedback" element={<FeedbackPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
-            <Route path="/my-sounds" element={<ProtectedRoute><MySoundsPage /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
             <Route path="/terms" element={<TermsOfUsePage />} />
             <Route path="/cookies" element={<CookiesPolicyPage />} />

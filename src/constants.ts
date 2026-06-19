@@ -173,6 +173,7 @@ export const SHOWS: Show[] = [
     image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831667/next-wave_zsxmpi.webp,
     days: [0],
   },
+  
   {
     id: 20,
     title: 'Worship',
