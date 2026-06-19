@@ -170,7 +170,7 @@ export const SHOWS: Show[] = [
     host: 'Sophie Mitchell',
     startTime: '17:00',
     endTime: '18:00',
-    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831667/next-wave_zsxmpi.webp,
+    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831667/next-wave_zsxmpi.webp',
     days: [0],
   },
   
