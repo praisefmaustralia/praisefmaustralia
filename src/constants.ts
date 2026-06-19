@@ -245,13 +245,3 @@ for (let day = 0; day <= 6; day++) {
     image: show.image
   }));
 }
-
-// ===================== DEVOTIONAL PODCASTS =====================
-export const DEVOTIONAL_PODCASTS: Podcast[] = [
-  { id: 'p1', title: 'Deep Roots', category: 'Bible Study', duration: '42 min', author: 'Dr. Jane Smith', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208853/logoworship_v2gdet.png' },
-  { id: 'p2', title: 'Daily Bread', category: 'Inspiration', duration: '15 min', author: 'Markus Doe', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208852/logoeveningvault_y2bsvk.png' },
-  { id: 'p3', title: 'The Quiet Hour', category: 'Meditation', duration: '20 min', author: 'Sarah Jordan', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208853/logoworship_v2gdet.png' },
-  { id: 'p4', title: 'Grace Notes', category: 'Music History', duration: '55 min', author: 'Scott Turner', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208852/logoeveningvault_y2bsvk.png' },
-  { id: 'p5', title: 'Soul Care', category: 'Mental Health', duration: '30 min', author: 'Daniel Brooks', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208853/logotheturningpoint_vkfag6.png' },
-  { id: 'p6', title: 'Morning Dew', category: 'Prayer', duration: '10 min', author: 'Michael Ray', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208735/logoaussiemorning_viwgyz.png' },
-];
