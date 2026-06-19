@@ -101,8 +101,8 @@ const Hero: React.FC<HeroProps> = ({
 
   if (!currentProgram) return null
 
-  const circleSize = 260
-  const strokeWidth = 6
+  const circleSize = 220
+  const strokeWidth = 8
   const center = circleSize / 2
   const radius = center - strokeWidth / 2
   const circumference = 2 * Math.PI * radius
@@ -154,8 +154,8 @@ const Hero: React.FC<HeroProps> = ({
               </svg>
             </div>
 
-            <div className="absolute bottom-3 right-3 w-16 h-16 bg-black rounded-full flex items-center justify-center border-[4px] border-white dark:border-black shadow-xl">
-              <span className="text-white text-3xl font-bold">1</span>
+            <div className="absolute bottom-0 right-0 w-16 h-16 bg-black rounded-full flex items-center justify-center border-[4px] border-white dark:border-black shadow-xl">
+              <span className="text-white text-3xl font-bold">2</span>
             </div>
           </div>
 
