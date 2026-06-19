@@ -1,3 +1,76 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+.recently-played {
+  padding: 48px 20px;
+  background: #0f0f0f;
+  color: #fff;
+}
+
+.recently-played__header {
+  max-width: 1120px;
+  margin: 0 auto 24px;
+}
+
+.eyebrow {
+  color: #ff6600;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.recently-played__header h2 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  margin: 0;
+}
+
+.recently-played__grid {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.recently-played__card {
+  background: #181818;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  padding: 16px;
+}
+
+.recently-played__art {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #ff6600, #222);
+  display: grid;
+  place-items: center;
+  margin-bottom: 14px;
+}
+
+.recently-played__art span {
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+.recently-played__card h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.recently-played__card p {
+  margin: 0;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .recently-played__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .recently-played__grid {
+    grid-template-columns: 1fr;
+  }
+}
