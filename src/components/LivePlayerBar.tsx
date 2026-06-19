@@ -11,15 +11,24 @@ interface LivePlayerBarProps {
   audioRef: React.RefObject<HTMLAudioElement | null>
 }
 
-const formatTimeToAmPm = (timeString: string): string => {
-  if (timeString.includes('AM') || timeString.includes('PM')) return timeString
+const formatTimeToAmPm = (time: string | Date): string => {
+  if (time instanceof Date) {
+    const hours = time.getHours()
+    const minutes = time.getMinutes().toString().padStart(2, '0')
+    const period = hours >= 12 ? 'PM' : 'AM'
+    const displayHour = hours % 12 || 12
 
-  const [hours, minutes] = timeString.split(':')
+    return `${displayHour}:${minutes} ${period}`
+  }
+
+  if (time.includes('AM') || time.includes('PM')) return time
+
+  const [hours, minutes = '00'] = time.split(':')
   let hour = parseInt(hours || '0', 10)
   const period = hour >= 12 ? 'PM' : 'AM'
   hour = hour % 12 || 12
 
-  return `${hour}:${minutes || '00'} ${period}`
+  return `${hour}:${minutes} ${period}`
 }
 
 const LivePlayerBar: React.FC<LivePlayerBarProps> = ({
