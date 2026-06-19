@@ -48,6 +48,7 @@ const BLOCKED_METADATA_KEYWORDS = [
 interface LiveMetadata {
   artist: string
   title: string
+  artwork?: string
   playedAt?: Date
   isMusic?: boolean
 }
