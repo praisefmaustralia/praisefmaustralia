@@ -204,10 +204,10 @@ export const SHOWS: Show[] = [
   {
     id: 23,
     title: 'Atmosphere Chill',
-    host: 'Pastoral Team',
+    host: 'Thy Keller',
     startTime: '22:00',
     endTime: '00:00',
-    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781832959/sunday-service_s46wns.webp',
+    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/atmos-chill_u0ay2q.webp',
     days: [0],
   },
   {
@@ -216,7 +216,7 @@ export const SHOWS: Show[] = [
     host: 'Noah Bennett',
     startTime: '00:00',
     endTime: '06:00',
-    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774208853/logoworship_v2gdet.png',
+    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/the-night-shift_hpgryk.webp',
     days: [0],
   },
 ];
