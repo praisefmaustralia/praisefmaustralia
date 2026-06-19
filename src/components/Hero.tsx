@@ -10,22 +10,26 @@ const getSydneyInfo = () => {
     timeZone: 'Australia/Sydney',
   })
   const sydneyDate = new Date(sydneyString)
+  const h = sydneyDate.getHours()
+  const m = sydneyDate.getMinutes()
+  const day = sydneyDate.getDay()
 
-  return {
-    day: sydneyDate.getDay(),
-    totalMinutes: sydneyDate.getHours() * 60 + sydneyDate.getMinutes(),
-  }
+  return { day, totalMinutes: h * 60 + m }
 }
 
 const parseTime = (time24: string) => {
-  const [h = '0', m = '0'] = time24.split(':')
-  return { h: parseInt(h, 10), m: parseInt(m, 10) }
+  const parts = time24.split(':')
+  const h = parseInt(parts[0] || '0', 10)
+  const m = parseInt(parts[1] || '0', 10)
+
+  return { h, m }
 }
 
 const format12h = (time24: string) => {
   const { h, m } = parseTime(time24)
   const period = h >= 12 ? 'PM' : 'AM'
   const displayH = h % 12 || 12
+
   return `${displayH}:${m.toString().padStart(2, '0')} ${period}`
 }
 
@@ -54,7 +58,9 @@ const Hero: React.FC<HeroProps> = ({
   const sydney = useMemo(() => getSydneyInfo(), [tick])
 
   const { currentProgram, upNextPrograms } = useMemo(() => {
-    const schedule = Array.isArray(SCHEDULES[sydney.day]) ? SCHEDULES[sydney.day] : SCHEDULES[1]
+    const schedule = Array.isArray(SCHEDULES[sydney.day])
+      ? SCHEDULES[sydney.day]
+      : SCHEDULES[1]
 
     const currentIndex = schedule.findIndex((p) => {
       const startTime = parseTime(p.startTime)
@@ -69,6 +75,7 @@ const Hero: React.FC<HeroProps> = ({
     })
 
     const current = currentIndex !== -1 ? schedule[currentIndex] : schedule[0]
+
     const next =
       currentIndex !== -1
         ? schedule.slice(currentIndex + 1, currentIndex + 3)
@@ -102,6 +109,7 @@ const Hero: React.FC<HeroProps> = ({
   if (!currentProgram) return null
 
   const circleSize = 192
+  const imageSize = 174
   const strokeWidth = 5
   const center = circleSize / 2
   const radius = center - strokeWidth / 2
@@ -109,27 +117,23 @@ const Hero: React.FC<HeroProps> = ({
   const offset = circumference - progress * circumference
 
   return (
-    <section className="bg-white dark:bg-[#000000] py-10 md:py-16 transition-colors duration-300">
+    <section className="bg-white dark:bg-[#000000] py-10 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-10 md:gap-16">
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-12">
           <div
             className="relative flex-shrink-0 group cursor-pointer"
             onClick={() => onNavigateToProgram(currentProgram)}
           >
             <div
-              className="relative flex items-center justify-center"
+              className="relative flex items-center justify-center rounded-full"
               style={{ width: circleSize, height: circleSize }}
             >
               <img
                 src={currentProgram.image}
                 alt={currentProgram.title}
                 className="rounded-full object-cover"
-                style={{
-                width: imageSize,
-                height: imageSize,
-                }}
-              
-            />
+                style={{ width: imageSize, height: imageSize }}
+              />
 
               <svg
                 width={circleSize}
@@ -140,11 +144,12 @@ const Hero: React.FC<HeroProps> = ({
                   cx={center}
                   cy={center}
                   r={radius}
-                  stroke="#dbdbdb"
+                  stroke="#eeeeee"
                   strokeWidth={strokeWidth}
                   fill="transparent"
                   className="dark:stroke-white/10"
                 />
+
                 <circle
                   cx={center}
                   cy={center}
@@ -159,63 +164,60 @@ const Hero: React.FC<HeroProps> = ({
               </svg>
             </div>
 
-            <div className="absolute bottom-2 right-2 w-12 h-12 bg-black rounded-full flex items-center justify-center border-[4px] border-white dark:border-black shadow-xl">
-              <span className="text-white text-3xl font-bold">2</span>
+            <div className="absolute bottom-2 right-2 w-12 h-12 bg-black rounded-full flex items-center justify-center border-[3px] border-white dark:border-black shadow-lg">
+              <span className="text-white text-2xl font-bold">2</span>
             </div>
           </div>
 
-          <div className="flex-grow pt-2 md:pt-8 text-center md:text-left">
-            <div className="text-sm font-semibold mb-3 flex items-center justify-center md:justify-start gap-2">
-              <span className="text-[#ff6600] uppercase tracking-widest">
-                LIVE
-              </span>
-              <span className="text-gray-400">
-                ·
-              </span>
-              <span className="text-gray-500 dark:text-gray-400">
+          <div className="flex-grow pt-4 text-center md:text-left">
+            <div className="text-[11px] font-normal text-gray-500 dark:text-gray-400 mb-1 flex items-center justify-center md:justify-start space-x-2">
+              <span className="text-[#ff6600] font-bold uppercase">LIVE</span>
+              <span>·</span>
+              <span>
                 {format12h(currentProgram.startTime)} - {format12h(currentProgram.endTime)}
               </span>
             </div>
 
             <h2
-              className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white tracking-tight mb-2 hover:text-[#ff6600] transition-colors cursor-pointer inline-flex items-center justify-center md:justify-start"
+              className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white tracking-tight mb-1 hover:text-[#ff6600] transition-colors cursor-pointer inline-flex items-center"
               onClick={() => onNavigateToProgram(currentProgram)}
             >
               {currentProgram.title}
               <ChevronRight className="w-8 h-8 ml-1 text-[#ff6600]" />
             </h2>
 
-            <p className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 font-semibold mb-3">
+            <p className="text-2xl text-gray-500 dark:text-gray-400 font-bold mb-3">
               with {currentProgram.host}
             </p>
 
-            <p className="text-lg text-gray-600 dark:text-gray-400 font-normal mb-5 max-w-2xl mx-auto md:mx-0">
+            <p className="text-lg text-gray-600 dark:text-gray-400 font-normal mb-6">
               {currentProgram.description}
             </p>
 
             {liveMetadata && (
-              <div className="mb-7 text-sm text-gray-500 dark:text-gray-400">
-                <span className="uppercase tracking-widest text-[11px] font-bold text-[#ff6600]">
+              <div className="mb-7">
+                <p className="text-[11px] text-[#ff6600] font-black uppercase tracking-widest mb-1">
                   Now Playing
-                </span>
-                <div>
-                  <strong className="text-gray-900 dark:text-white">
+                </p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  <span className="font-bold text-black dark:text-white">
                     {liveMetadata.title}
-                  </strong>{' '}
-                  <span>— {liveMetadata.artist}</span>
-                </div>
+                  </span>{' '}
+                  — {liveMetadata.artist}
+                </p>
               </div>
             )}
 
             <button
               onClick={onListenClick}
-              className="bg-[#ff6600] text-white px-10 py-4 flex items-center justify-center space-x-3 hover:bg-[#e65c00] transition-all active:scale-95 mx-auto md:mx-0 rounded-xl shadow-md"
+              className="bg-[#ff6600] text-white px-10 py-4 flex items-center justify-center space-x-3 hover:bg-[#e65c00] transition-all active:scale-95 mx-auto md:mx-0 rounded-lg shadow-md"
             >
               {isPlaying ? (
                 <Pause className="fill-current w-5 h-5" />
               ) : (
                 <Play className="fill-current w-5 h-5" />
               )}
+
               <span className="text-lg font-bold tracking-tight">
                 {isPlaying ? 'Pause' : 'Listen Live'}
               </span>
@@ -226,14 +228,14 @@ const Hero: React.FC<HeroProps> = ({
         {showDetails && (
           <div className="animate-in fade-in slide-in-from-top-4 duration-500">
             <div className="mt-16 pt-8 border-t border-gray-100 dark:border-white/5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                 {upNextPrograms.map((prog) => (
                   <div
                     key={prog.id}
-                    className="flex items-start space-x-5 group cursor-pointer bg-gray-50 dark:bg-white/5 rounded-2xl p-5 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                    className="flex items-start space-x-5 group cursor-pointer bg-gray-50 dark:bg-white/5 rounded-2xl p-5"
                     onClick={() => onNavigateToProgram(prog)}
                   >
-                    <div className="w-24 h-24 flex-shrink-0 bg-gray-100 overflow-hidden rounded-xl">
+                    <div className="w-24 h-24 rounded-lg flex-shrink-0 bg-gray-100 overflow-hidden">
                       <img
                         src={prog.image}
                         alt={prog.title}
@@ -265,7 +267,7 @@ const Hero: React.FC<HeroProps> = ({
             </div>
 
             <div
-              className="mt-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between group cursor-pointer transition-all hover:border-[#ff6600]/50"
+              className="mt-12 bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 p-8 flex flex-col md:flex-row items-center justify-between group cursor-pointer transition-all hover:border-[#ff6600]/50"
               onClick={() => navigate('/new-releases')}
             >
               <div className="flex items-center space-x-6 mb-6 md:mb-0">
@@ -279,7 +281,7 @@ const Hero: React.FC<HeroProps> = ({
                     New Music Alert
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 font-normal uppercase tracking-widest">
-                    Fresh worship and gospel from Australia and beyond
+                    Fresh anthems dropping now
                   </p>
                 </div>
               </div>
@@ -294,90 +296,21 @@ const Hero: React.FC<HeroProps> = ({
 
         <div className="mt-12 pt-6">
           {showDetails && (
-            <>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 italic">
-                {currentProgram.description.split('.')[0]}.
-              </p>
-
-              <p className="text-[11px] text-gray-400 dark:text-gray-500 uppercase font-medium tracking-widest mb-4">
-                Produced by Praise FM Australia · The Global Worship Network.
-              </p>
-            </>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 italic">
+              {currentProgram.description.split('.')[0]}.
+            </p>
           )}
 
-          <div className="flex flex-col space-y-3">
-            {showDetails && (
-              <button
-                onClick={() => onNavigateToProgram(currentProgram)}
-                className="flex items-center text-sm font-semibold text-black dark:text-white hover:text-[#ff6600] transition-colors w-fit group mx-auto md:mx-0"
-              >
-                Programme Website <ExternalLinkIcon className="w-4 h-4 ml-2 text-[#ff6600]" />
-              </button>
-            )}
-
-            <button
-              onClick={() => setShowDetails(!showDetails)}
-              className="flex items-center text-sm font-semibold text-black dark:text-white hover:text-[#ff6600] transition-colors w-fit mx-auto md:mx-0"
-            >
-              {showDetails ? (
-                <>
-                  Show less <ChevronUpIcon className="w-4 h-4 ml-1 text-[#ff6600]" />
-                </>
-              ) : (
-                <>
-                  Show more <ChevronDownIcon className="w-4 h-4 ml-1 text-[#ff6600]" />
-                </>
-              )}
-            </button>
-          </div>
+          <button
+            onClick={() => setShowDetails(!showDetails)}
+            className="flex items-center text-sm font-semibold text-black dark:text-white hover:text-[#ff6600] transition-colors w-fit"
+          >
+            {showDetails ? 'Show less' : 'Show more'}
+          </button>
         </div>
       </div>
     </section>
   )
 }
-
-const ExternalLinkIcon = ({ className }: { className?: string }) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-    <polyline points="15 3 21 3 21 9" />
-    <line x1="10" y1="14" x2="21" y2="3" />
-  </svg>
-)
-
-const ChevronUpIcon = ({ className }: { className?: string }) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="3.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <polyline points="18 15 12 9 6 15" />
-  </svg>
-)
-
-const ChevronDownIcon = ({ className }: { className?: string }) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="3.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <polyline points="6 9 12 15 18 9" />
-  </svg>
-)
 
 export default Hero
