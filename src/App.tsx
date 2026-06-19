@@ -26,8 +26,8 @@ import { SCHEDULES } from './constants'
 import { Program } from './types'
 
 const DEFAULT_COVER = '/logo.png'
-const STREAM_URL = 'https://stream.zeno.fm/marglwedbnltv'
-const METADATA_URL = 'https://api.zeno.fm/mounts/metadata/subscribe/marglwedbnltv'
+const STREAM_URL = 'https://stream.zeno.fm/vku09lx2rkntv'
+const METADATA_URL = 'https://api.zeno.fm/mounts/metadata/subscribe/vku09lx2rkntv'
 
 const BLOCKED_METADATA_KEYWORDS = [
   'praise fm',
