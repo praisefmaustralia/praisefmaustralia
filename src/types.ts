@@ -3,7 +3,7 @@ export type Program = {
   image: string
   title: string
   host: string
-  startTime: string | Date
-  endTime: string | Date
+  startTime: string
+  endTime: string
   description: string
 }
