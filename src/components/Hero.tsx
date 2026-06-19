@@ -17,7 +17,11 @@ const getSydneyInfo = () => {
   return { day, totalMinutes: h * 60 + m }
 }
 
-const parseTime = (time24: string) => {
+const parseTime = (time24: string | Date) => {
+  if (time24 instanceof Date) {
+    return { h: time24.getHours(), m: time24.getMinutes() }
+  }
+
   const parts = time24.split(':')
   const h = parseInt(parts[0] || '0', 10)
   const m = parseInt(parts[1] || '0', 10)
@@ -25,7 +29,7 @@ const parseTime = (time24: string) => {
   return { h, m }
 }
 
-const format12h = (time24: string) => {
+const format12h = (time24: string | Date) => {
   const { h, m } = parseTime(time24)
   const period = h >= 12 ? 'PM' : 'AM'
   const displayH = h % 12 || 12
