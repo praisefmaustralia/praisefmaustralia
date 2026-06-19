@@ -5,7 +5,7 @@ import { Play, Pause, Megaphone } from 'lucide-react'
 import Navbar from './components/Navbar'
 import RecentlyPlayed from './components/RecentlyPlayed'
 import LivePlayerBar from './components/LivePlayerBar'
-import ProgramDetail from './components/ProgramDetailPage'
+import ProgramDetailPage from './components/ProgramDetailPage'
 import Playlist from './components/Playlist'
 import ScheduleList from './components/ScheduleList'
 import SEO from './components/SEO'
@@ -496,12 +496,7 @@ const AppContent: React.FC = () => {
             path="/program"
             element={
               selectedProgram ? (
-                <ProgramDetail
-                  program={selectedProgram}
-                  isPlaying={isPlaying}
-                  onListenClick={togglePlayback}
-                  onViewSchedule={() => navigate('/schedule')}
-                />
+                <ProgramDetailPage />
               ) : (
                 <Navigate to="/" replace />
               )
