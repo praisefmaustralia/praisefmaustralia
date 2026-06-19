@@ -11,15 +11,13 @@ const DEFAULT_IMAGE =
 
 const SITE_URL = "https://praisefmaustralia.vercel.app";
 
-const SEO: React.FC<SEOProps> = ({ title, description, image }) => {
+const SEO = ({ title, description, image }: SEOProps) => {
   useEffect(() => {
     document.title = title;
 
     const setMeta = (key: string, content: string, isProperty = false) => {
       let meta = document.querySelector(
-        isProperty
-          ? `meta[property="${key}"]`
-          : `meta[name="${key}"]`
+        isProperty ? `meta[property="${key}"]` : `meta[name="${key}"]`
       );
 
       if (!meta) {
@@ -31,12 +29,10 @@ const SEO: React.FC<SEOProps> = ({ title, description, image }) => {
       meta.setAttribute("content", content);
     };
 
-    // 🔥 GOOGLE SEO - ALTERADO para Australia
     setMeta("description", description);
     setMeta("robots", "index, follow");
     setMeta("author", "Praise FM Australia");
 
-    // 🔥 OPEN GRAPH - ALTERADO para Australia
     setMeta("og:title", title, true);
     setMeta("og:description", description, true);
     setMeta("og:image", image || DEFAULT_IMAGE, true);
@@ -45,24 +41,25 @@ const SEO: React.FC<SEOProps> = ({ title, description, image }) => {
     setMeta("og:url", SITE_URL, true);
     setMeta("og:locale", "en_AU", true);
 
-    // 🔥 TWITTER
     setMeta("twitter:card", "summary_large_image");
     setMeta("twitter:title", title);
     setMeta("twitter:description", description);
     setMeta("twitter:image", image || DEFAULT_IMAGE);
 
-    // 🔥 CANONICAL (importante pro Google)
-    let link: HTMLLinkElement | null = document.querySelector("link[rel='canonical']");
+    let link: HTMLLinkElement | null = document.querySelector(
+      "link[rel='canonical']"
+    );
+
     if (!link) {
       link = document.createElement("link");
       link.setAttribute("rel", "canonical");
       document.head.appendChild(link);
     }
+
     link.setAttribute("href", SITE_URL);
 
-    // 🔥 SCHEMA ORG (rádio profissional) - ALTERADO para Australia
     const scriptId = "schema-org";
-    let existingScript = document.getElementById(scriptId);
+    const existingScript = document.getElementById(scriptId);
 
     if (existingScript) existingScript.remove();
 
@@ -73,21 +70,17 @@ const SEO: React.FC<SEOProps> = ({ title, description, image }) => {
     script.innerHTML = JSON.stringify({
       "@context": "https://schema.org",
       "@type": "RadioStation",
-      "name": "Praise FM Australia",
-      "url": SITE_URL,
-      "logo": image || DEFAULT_IMAGE,
-      "sameAs": [
-        "https://www.instagram.com/praisefmaustralia/",
-        "https://facebook.com/"
-      ],
-      "areaServed": {
+      name: "Praise FM Australia",
+      url: SITE_URL,
+      logo: image || DEFAULT_IMAGE,
+      sameAs: ["https://www.instagram.com/praisefmaustralia/"],
+      areaServed: {
         "@type": "Place",
-        "name": "Australia"
-      }
+        name: "Australia",
+      },
     });
 
     document.head.appendChild(script);
-
   }, [title, description, image]);
 
   return null;
