@@ -345,11 +345,11 @@ const AppContent: React.FC = () => {
         {selectedProgram ? (
           <ProgramDetail
             program={selectedProgram}
-            onBack={() => setSelectedProgram(null)}
             onViewSchedule={() => navigate('/schedule')}
             onListenClick={togglePlayback}
-            isPlaying={isPlaying}
-          />
+            isPlaying={isPlaying} format12h={function (time: string | Date): string {
+              throw new Error('Function not implemented.')
+            } }          />
         ) : (
           <Routes>
             <Route
