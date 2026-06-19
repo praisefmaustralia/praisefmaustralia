@@ -12,7 +12,6 @@ type ProgramDetailProps = {
   isPlaying: boolean
   onListenClick: () => void
   onViewSchedule: () => void
-  format12h: (time: string | Date) => string
 }
 
 export default function ProgramDetail({
@@ -20,7 +19,6 @@ export default function ProgramDetail({
   isPlaying,
   onListenClick,
   onViewSchedule,
-  format12h,
 }: ProgramDetailProps) {
   return (
     <section className="bg-black text-white min-h-screen">
@@ -48,7 +46,6 @@ export default function ProgramDetail({
             </h2>
 
             <div className="text-gray-400 mb-6">
-              {format12h(program.startTime)} – {format12h(program.endTime)}
             </div>
 
             <p className="text-lg text-gray-300 leading-relaxed max-w-3xl mb-10">
