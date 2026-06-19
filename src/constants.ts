@@ -22,7 +22,7 @@ export const SHOWS: Show[] = [
     id: 1,
     title: 'The Night Shift',
     host: 'Noah Bennett',
-    description: 'Late-night worship music.',
+    description: 'Late night worship music.',
     startTime: '00:00',
     endTime: '06:00',
     image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/the-night-shift_hpgryk.webp',
