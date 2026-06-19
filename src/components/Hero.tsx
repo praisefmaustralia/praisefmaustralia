@@ -117,14 +117,19 @@ const Hero: React.FC<HeroProps> = ({
             onClick={() => onNavigateToProgram(currentProgram)}
           >
             <div
-              className="relative rounded-full overflow-hidden bg-gray-100 dark:bg-white/5"
+              className="relative flex items-center justify-center"
               style={{ width: circleSize, height: circleSize }}
             >
               <img
                 src={currentProgram.image}
                 alt={currentProgram.title}
-                className="w-full h-full object-cover"
-              />
+                className="rounded-full object-cover"
+                style={{
+                width: imageSize,
+                height: imageSize,
+                }}
+              
+            />
 
               <svg
                 width={circleSize}
