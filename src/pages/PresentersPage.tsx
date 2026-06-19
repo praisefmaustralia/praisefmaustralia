@@ -1,146 +1,138 @@
-import React from 'react'
+import React from "react";
 
 interface PresentersPageProps {
-  onNavigateToProgram?: (program: any) => void
+  onNavigateToProgram?: (program: any) => void;
 }
 
-const presenters = [
-  {
-    name: 'Noah Bennett',
-    show: 'The Night Shift',
-    time: '12:00 AM - 6:00 AM',
-    image: '/logo.png',
-    description: 'Late night worship and calm songs through the early hours.'
-  },
-  {
-    name: 'Olivia Blake',
-    show: 'Aussie Morning',
-    time: '7:00 AM - 12:00 PM',
-    image: '/logo.png',
-    description: 'Start your day with worship, encouragement and fresh Christian music.'
-  },
-  {
-    name: 'Kelly Fergusson',
-    show: 'Midday Journey',
-    time: '1:00 PM - 4:00 PM',
-    image: '/logo.png',
-    description: 'Uplifting gospel and worship for the middle of the day.'
-  },
-  {
-    name: 'Jarrah',
-    show: 'Oz Hip Hop',
-    time: '4:00 PM - 5:00 PM',
-    image: '/logo.png',
-    description: 'Christian hip hop and urban gospel from Australia and beyond.'
-  },
-  {
-    name: 'Sophie Mitchell',
-    show: 'Next Wave',
-    time: '5:00 PM - 6:00 PM',
-    image: '/logo.png',
-    description: 'New sounds, future artists and fresh worship discoveries.'
-  },
-  {
-    name: 'Emily Davis',
-    show: 'Road To Home',
-    time: '6:00 PM - 8:00 PM',
-    image: '/logo.png',
-    description: 'The evening drive with worship, hope and songs for the way home.'
-  },
-  {
-    name: 'Jezza',
-    show: 'Faith & Fuzzy',
-    time: '8:00 PM - 9:00 PM',
-    image: '/logo.png',
-    description: 'Faith-filled music and warm evening energy.'
-  },
-  {
-    name: 'Jack Thompson',
-    show: 'Throwback',
-    time: '9:00 PM - 10:00 PM',
-    image: '/logo.png',
-    description: 'Classic worship, gospel favourites and songs worth remembering.'
-  },
-  {
-    name: 'Thy Keller',
-    show: 'Atmosphere Chill',
-    time: '10:00 PM - 12:00 AM',
-    image: '/logo.png',
-    description: 'Chilled worship and atmospheric Christian music for the night.'
-  },
-  {
-    name: 'Matthew Reed',
-    show: 'Road to Church',
-    time: 'Sunday · 7:00 AM - 12:00 PM',
-    image: '/logo.png',
-    description: 'Sunday morning worship and preparation for church.'
-  }
-]
+type Presenter = {
+  name: string;
+  role: string;
+  description: string;
+  initials: string;
+};
 
-const PresentersPage: React.FC<PresentersPageProps> = ({ onNavigateToProgram }) => {
+const presenters: Presenter[] = [
+  {
+    name: "Noah Bennett",
+    role: "Praise FM Breakfast",
+    description: "Morning worship, fresh energy and uplifting conversations.",
+    initials: "NB",
+  },
+  {
+    name: "Olivia Blake",
+    role: "Praise FM Worship",
+    description: "A warm voice guiding Australia through worship moments.",
+    initials: "OB",
+  },
+  {
+    name: "Kelly Fergusson",
+    role: "Midday Praise",
+    description: "Encouragement, gospel favourites and songs for the day.",
+    initials: "KF",
+  },
+  {
+    name: "Jarrah",
+    role: "Australian Worship",
+    description: "Local sounds, worship stories and music with purpose.",
+    initials: "JA",
+  },
+  {
+    name: "Sophie Mitchell",
+    role: "Afternoon Praise",
+    description: "Fresh gospel, worship hits and feel-good radio.",
+    initials: "SM",
+  },
+  {
+    name: "Emily Davis",
+    role: "Evening Worship",
+    description: "Peaceful songs, reflection and worship for the evening.",
+    initials: "ED",
+  },
+  {
+    name: "Jezza",
+    role: "Praise FM Drive",
+    description: "Big songs, positive energy and the sound of the city.",
+    initials: "JZ",
+  },
+  {
+    name: "Jack Thompson",
+    role: "Praise FM Live",
+    description: "Live worship, new releases and global praise moments.",
+    initials: "JT",
+  },
+  {
+    name: "Thy Keller",
+    role: "Praise FM Global",
+    description: "Connecting Australia with worship from around the world.",
+    initials: "TK",
+  },
+  {
+    name: "Matthew Reed",
+    role: "Weekend Praise",
+    description: "Weekend worship, classics and songs for the soul.",
+    initials: "MR",
+  },
+];
+
+const PresentersPage: React.FC<PresentersPageProps> = () => {
   return (
-    <main className="bg-white dark:bg-[#121212] min-h-screen text-gray-950 dark:text-white">
-      <section className="max-w-7xl mx-auto px-4 md:px-6 py-12">
-        <p className="text-orange-500 font-black uppercase tracking-widest text-sm mb-3">
-          Praise FM Australia
-        </p>
+    <main className="min-h-screen bg-white dark:bg-black">
+      <section className="max-w-7xl mx-auto px-4 py-12">
+        <div className="mb-10">
+          <p className="text-sm font-bold uppercase tracking-[0.25em] text-orange-500 mb-3">
+            Praise FM Australia
+          </p>
 
-        <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-4">
-          Presenters
-        </h1>
+          <h1 className="text-4xl md:text-6xl font-black text-gray-950 dark:text-white mb-4">
+            Presenters
+          </h1>
 
-        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mb-10">
-          Meet the voices behind Praise FM Australia — worship, gospel and uplifting music from Sydney.
-        </p>
+          <p className="max-w-2xl text-lg text-gray-600 dark:text-gray-400">
+            Meet the voices behind Praise FM Australia — worship, gospel and
+            encouragement across the day.
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {presenters.map((presenter) => (
-            <button
+            <article
               key={presenter.name}
-              onClick={() =>
-                onNavigateToProgram?.({
-                  id: presenter.show.toLowerCase().replaceAll(' ', '-'),
-                  title: presenter.show,
-                  host: presenter.name,
-                  startTime: '00:00',
-                  endTime: '00:00',
-                  image: presenter.image,
-                  description: presenter.description
-                })
-              }
-              className="group text-left bg-gray-100 dark:bg-[#1A1A1A] hover:bg-gray-200 dark:hover:bg-[#252525] transition rounded-3xl overflow-hidden"
+              className="group rounded-3xl overflow-hidden bg-gray-100 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 hover:-translate-y-1 transition-all duration-300 hover:shadow-xl"
             >
-              <div className="aspect-square bg-gray-200 dark:bg-black overflow-hidden">
-                <img
-                  src={presenter.image}
-                  alt={presenter.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                />
+              <div className="aspect-square bg-gradient-to-br from-orange-500 via-orange-600 to-black flex items-center justify-center">
+                <div className="w-28 h-28 rounded-full bg-white/15 backdrop-blur-md border border-white/30 flex items-center justify-center">
+                  <span className="text-4xl font-black text-white">
+                    {presenter.initials}
+                  </span>
+                </div>
               </div>
 
-              <div className="p-5">
-                <p className="text-xs font-black uppercase tracking-widest text-orange-500 mb-2">
-                  {presenter.time}
-                </p>
-
-                <h2 className="text-2xl font-black leading-tight mb-1">
+              <div className="p-6">
+                <h2 className="text-xl font-black text-gray-950 dark:text-white group-hover:text-orange-500 transition-colors">
                   {presenter.name}
                 </h2>
 
-                <p className="text-gray-700 dark:text-gray-300 font-bold mb-3">
-                  {presenter.show}
+                <p className="mt-1 text-sm font-bold text-orange-500">
+                  {presenter.role}
                 </p>
 
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="mt-4 text-sm leading-6 text-gray-600 dark:text-gray-400">
                   {presenter.description}
                 </p>
+
+                <button
+                  type="button"
+                  className="mt-6 inline-flex items-center rounded-full bg-black dark:bg-white px-5 py-2 text-sm font-bold text-white dark:text-black hover:bg-orange-500 dark:hover:bg-orange-500 dark:hover:text-white transition-colors"
+                >
+                  View profile
+                </button>
               </div>
-            </button>
+            </article>
           ))}
         </div>
       </section>
     </main>
-  )
-}
+  );
+};
 
-export default PresentersPage
+export default PresentersPage;
