@@ -1,8 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const LOGO_LIGHT = 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1774221235/SVGAUS_vnyvbf.webp'
+const LOGO_DARK = 'https://res.cloudinary.com/ddhu86ukg/image/upload/e_colorize:100,co_white/v1774221235/SVGAUS_vnyvbf.webp'
+
 const Footer: React.FC = () => {
   const navigate = useNavigate();
+  const isDark = document.documentElement.classList.contains('dark')
+  const logoSrc = isDark ? LOGO_DARK : LOGO_LIGHT
 
   return (
     <footer className="bg-black text-white border-t border-white/10 py-12">
@@ -14,7 +19,7 @@ const Footer: React.FC = () => {
               onClick={() => navigate('/')}
             >
               <img
-                src="https://res.cloudinary.com/ddhu86ukg/image/upload/v1774221235/SVGAUS_vnyvbf.webp"
+                src={LOGO_DARK}
                 alt="Praise FM Australia Logo"
                 className="h-10 w-auto object-contain"
               />
@@ -31,7 +36,6 @@ const Footer: React.FC = () => {
             <h4 className="font-medium uppercase text-[11px] tracking-widest mb-6 text-white/50">
               Music
             </h4>
-
             <ul className="space-y-4 text-sm font-normal text-gray-400">
               <li>
                 <button onClick={() => navigate('/music')} className="hover:text-[#ff6600] transition-colors text-left">
@@ -55,7 +59,6 @@ const Footer: React.FC = () => {
             <h4 className="font-medium uppercase text-[11px] tracking-widest mb-6 text-white/50">
               Radio
             </h4>
-
             <ul className="space-y-4 text-sm font-normal text-gray-400">
               <li>
                 <button onClick={() => navigate('/schedule')} className="hover:text-[#ff6600] transition-colors text-left">
@@ -79,7 +82,6 @@ const Footer: React.FC = () => {
             <h4 className="font-medium uppercase text-[11px] tracking-widest mb-6 text-white/50">
               Support
             </h4>
-
             <ul className="space-y-4 text-sm font-normal text-gray-400">
               <li>
                 <button onClick={() => navigate('/help')} className="hover:text-[#ff6600] transition-colors text-left">
@@ -103,7 +105,6 @@ const Footer: React.FC = () => {
             <h4 className="font-medium uppercase text-[11px] tracking-widest mb-6 text-white/50">
               Follow Us
             </h4>
-
             <ul className="space-y-4 text-sm font-normal text-gray-400">
               <li>
                 <a
@@ -121,9 +122,7 @@ const Footer: React.FC = () => {
 
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] font-normal text-gray-500 uppercase tracking-widest">
           <p>© 2026 PRAISE FM AUSTRALIA. INSPIRED BY EXCELLENCE.</p>
-
           <div className="flex space-x-6 mt-4 md:mt-0">
-            {/* Rota corrigida: /privacy (não /privacy-policy) */}
             <button onClick={() => navigate('/privacy')} className="hover:text-white transition-colors">
               Privacy Policy
             </button>
