@@ -48,7 +48,7 @@ const Navbar: React.FC<NavbarProps> = ({ activeTab, theme, onToggleTheme }) => {
             <img
               src={LOGO_URL}
               alt="Praise FM Australia"
-              className="h-9 w-auto"
+              className="h-9 w-auto dark:brightness-0 dark:invert"
             />
           </div>
 
