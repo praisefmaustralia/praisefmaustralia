@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Share2, Copy, BookOpen, Quote, Loader2, Check, AlertCircle } from 'lucide-react';
 
@@ -47,15 +48,16 @@ const DailyVerse: React.FC = () => {
 
   const copyToClipboard = async () => {
     if (!verse) return;
-    // ALTERADO: Praise FM USA → Praise FM Australia
-    const shareText = `"${verse.text}" - ${verse.reference} | Praise FM Australia`;
+    const shareText = `"${verse.text}" - ${verse.reference} | Praise FM USA`;
     
     try {
+      // Usando a abordagem moderna e tratando permissões
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(shareText);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       } else {
+        // Fallback para navegadores antigos ou contextos não seguros
         const textArea = document.createElement("textarea");
         textArea.value = shareText;
         document.body.appendChild(textArea);
@@ -77,9 +79,10 @@ const DailyVerse: React.FC = () => {
   const handleShare = async () => {
     if (!verse) return;
     
+    // Garantindo que a URL seja absoluta e válida
     const shareUrl = window.location.origin + window.location.pathname + window.location.hash;
     const shareData = {
-      title: 'Praise FM Australia - Daily Scripture', // ALTERADO: USA → Australia
+      title: 'Praise FM USA - Daily Scripture',
       text: `"${verse.text}" - ${verse.reference}`,
       url: shareUrl,
     };
@@ -93,6 +96,7 @@ const DailyVerse: React.FC = () => {
         copyToClipboard();
       }
     } catch (err) {
+      // AbortError é disparado se o usuário cancelar o compartilhamento, ignoramos.
       if ((err as Error).name !== 'AbortError') {
         console.error("Error sharing:", err);
         copyToClipboard();
