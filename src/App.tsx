@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from
 import { Play, Pause, Megaphone } from 'lucide-react'
 
 import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 import RecentlyPlayed from './components/RecentlyPlayed'
 import LivePlayerBar from './components/LivePlayerBar'
 import ProgramDetailPage from './components/ProgramEpisodesPage'
@@ -533,6 +534,8 @@ const AppContent: React.FC = () => {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+
+      <Footer />
 
       {currentProgram && (
         <LivePlayerBar
