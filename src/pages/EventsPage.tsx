@@ -6,20 +6,10 @@ import {
 
 // ─── ⚙️  Config ───────────────────────────────────────────────────────────────
 // 1. Acesse https://developer.ticketmaster.com e crie uma conta gratuita
-// 2. knLH1Jjqm2gn2f8wnjS0xAmxDgh7kf0S
-// 3. Adicione no .env: VITE_TICKETMASTER_KEY=
-//    (sem fallback fixo no código — só a variável de ambiente)
-declare global {
-  interface ImportMetaEnv {
-    readonly VITE_TICKETMASTER_KEY: string;
-  }
-
-  interface ImportMeta {
-    readonly env: ImportMetaEnv;
-  }
-}
-
-const TM_API_KEY = import.meta.env.VITE_TICKETMASTER_KEY ?? '';
+// 2. Copie sua "Consumer Key" do dashboard
+// 3. Adicione no .env: VITE_TICKETMASTER_KEY=sua_consumer_key
+// import.meta.env may not be typed in this project; cast to any to avoid TS error
+const TM_API_KEY = (import.meta as any).env?.VITE_TICKETMASTER_KEY ?? '';
 
 // Artistas Gospel/CCM monitorados — mix de internacionais que excursionam
 // pela Austrália + artistas/ministérios australianos. Adicione ou remova à vontade.
