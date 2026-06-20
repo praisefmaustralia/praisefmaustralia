@@ -34,28 +34,17 @@ const Footer: React.FC = () => {
 
             <ul className="space-y-4 text-sm font-normal text-gray-400">
               <li>
-                <button
-                  onClick={() => navigate('/music')}
-                  className="hover:text-[#ff6600] transition-colors text-left"
-                >
+                <button onClick={() => navigate('/music')} className="hover:text-[#ff6600] transition-colors text-left">
                   Praise FM Playlist
                 </button>
               </li>
-
               <li>
-                <button
-                  onClick={() => navigate('/new-releases')}
-                  className="hover:text-[#ff6600] transition-colors text-left"
-                >
+                <button onClick={() => navigate('/new-releases')} className="hover:text-[#ff6600] transition-colors text-left">
                   New Releases
                 </button>
               </li>
-
               <li>
-                <button
-                  onClick={() => navigate('/artists')}
-                  className="hover:text-[#ff6600] transition-colors text-left"
-                >
+                <button onClick={() => navigate('/artists')} className="hover:text-[#ff6600] transition-colors text-left">
                   Featured Artists
                 </button>
               </li>
@@ -69,28 +58,17 @@ const Footer: React.FC = () => {
 
             <ul className="space-y-4 text-sm font-normal text-gray-400">
               <li>
-                <button
-                  onClick={() => navigate('/schedule')}
-                  className="hover:text-[#ff6600] transition-colors text-left"
-                >
+                <button onClick={() => navigate('/schedule')} className="hover:text-[#ff6600] transition-colors text-left">
                   Full Schedule
                 </button>
               </li>
-
               <li>
-                <button
-                  onClick={() => navigate('/presenters')}
-                  className="hover:text-[#ff6600] transition-colors text-left"
-                >
+                <button onClick={() => navigate('/presenters')} className="hover:text-[#ff6600] transition-colors text-left">
                   Our Presenters
                 </button>
               </li>
-
               <li>
-                <button
-                  onClick={() => navigate('/devotional')}
-                  className="hover:text-[#ff6600] transition-colors text-left"
-                >
+                <button onClick={() => navigate('/devotional')} className="hover:text-[#ff6600] transition-colors text-left">
                   Daily Devotional
                 </button>
               </li>
@@ -104,28 +82,17 @@ const Footer: React.FC = () => {
 
             <ul className="space-y-4 text-sm font-normal text-gray-400">
               <li>
-                <button
-                  onClick={() => navigate('/help')}
-                  className="hover:text-[#ff6600] transition-colors text-left"
-                >
+                <button onClick={() => navigate('/help')} className="hover:text-[#ff6600] transition-colors text-left">
                   Help Center
                 </button>
               </li>
-
               <li>
-                <button
-                  onClick={() => navigate('/feedback')}
-                  className="hover:text-[#ff6600] transition-colors text-left"
-                >
+                <button onClick={() => navigate('/feedback')} className="hover:text-[#ff6600] transition-colors text-left">
                   Feedback & Support
                 </button>
               </li>
-
               <li>
-                <a
-                  href="mailto:praisefmbrasil@gmail.com"
-                  className="hover:text-[#ff6600] transition-colors"
-                >
+                <a href="mailto:praisefmbrasil@gmail.com" className="hover:text-[#ff6600] transition-colors">
                   Direct Contact
                 </a>
               </li>
@@ -156,24 +123,14 @@ const Footer: React.FC = () => {
           <p>© 2026 PRAISE FM AUSTRALIA. INSPIRED BY EXCELLENCE.</p>
 
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <button
-              onClick={() => navigate('/privacy-policy')}
-              className="hover:text-white transition-colors"
-            >
+            {/* Rota corrigida: /privacy (não /privacy-policy) */}
+            <button onClick={() => navigate('/privacy')} className="hover:text-white transition-colors">
               Privacy Policy
             </button>
-
-            <button
-              onClick={() => navigate('/terms')}
-              className="hover:text-white transition-colors"
-            >
+            <button onClick={() => navigate('/terms')} className="hover:text-white transition-colors">
               Terms of Use
             </button>
-
-            <button
-              onClick={() => navigate('/cookies')}
-              className="hover:text-white transition-colors"
-            >
+            <button onClick={() => navigate('/cookies')} className="hover:text-white transition-colors">
               Cookies
             </button>
           </div>
