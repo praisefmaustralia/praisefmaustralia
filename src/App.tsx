@@ -499,7 +499,7 @@ const AppContent: React.FC = () => {
             path="/program"
             element={
               selectedProgram ? (
-                <ProgramDetailPage program={selectedProgram} />
+                <ProgramDetailPage />
               ) : (
                 <Navigate to="/" replace />
               )
