@@ -300,7 +300,6 @@ const AppContent: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false)
   const [liveMetadata, setLiveMetadata] = useState<LiveMetadata | null>(null)
   const [trackHistory, setTrackHistory] = useState<LiveMetadata[]>([])
-  const [selectedProgram, setSelectedProgram] = useState<Program | null>(null)
 
   const [theme, setTheme] = useState<'light' | 'dark'>(
     () => (localStorage.getItem('praise-theme-au') as 'light' | 'dark') || 'light'
@@ -399,9 +398,10 @@ const AppContent: React.FC = () => {
       })
   }
 
+  // Navega para a página do programa passando os dados via location.state
+  // Isso evita dependência de estado em memória e funciona ao recarregar a página
   const openProgramPage = (program: Program) => {
-    setSelectedProgram(program)
-    navigate('/program')
+    navigate('/program', { state: { program } })
   }
 
   useEffect(() => {
@@ -460,6 +460,9 @@ const AppContent: React.FC = () => {
     }
   }, [])
 
+  // Lê o programa selecionado do location.state (funciona mesmo ao recarregar)
+  const selectedProgram: Program | null = (location.state as any)?.program ?? null
+
   const seo = {
     title: 'Praise FM Australia - 24/7 Worship & Gospel Radio',
     description:
@@ -496,7 +499,7 @@ const AppContent: React.FC = () => {
             path="/program"
             element={
               selectedProgram ? (
-                <ProgramDetailPage />
+                <ProgramDetailPage program={selectedProgram} />
               ) : (
                 <Navigate to="/" replace />
               )

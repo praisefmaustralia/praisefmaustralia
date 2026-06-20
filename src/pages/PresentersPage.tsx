@@ -67,7 +67,25 @@ const presenters = [
   }
 ]
 
-const PresentersPage: React.FC<PresentersPageProps> = () => {
+const PresentersPage: React.FC<PresentersPageProps> = ({ onNavigateToProgram }) => {
+  const handlePresenterClick = (presenter: typeof presenters[number]) => {
+    if (!onNavigateToProgram) return
+
+    // Monta um objeto compatível com Program usando os dados do presenter
+    onNavigateToProgram({
+      title: presenter.program,
+      host: presenter.name,
+      description: presenter.bio,
+      image: presenter.image,
+      cover: presenter.image,
+      presenterImage: presenter.image,
+      // Campos obrigatórios do tipo Program com fallback neutro
+      startTime: '00:00',
+      endTime: '00:00',
+      days: []
+    })
+  }
+
   return (
     <main className="bg-white dark:bg-[#121212] text-black dark:text-white">
       <section className="max-w-7xl mx-auto px-4 md:px-6 py-10">
@@ -89,7 +107,8 @@ const PresentersPage: React.FC<PresentersPageProps> = () => {
           {presenters.map((presenter) => (
             <article
               key={presenter.name}
-              className="group rounded-3xl overflow-hidden bg-gray-100 dark:bg-[#1A1A1A] hover:bg-gray-200 dark:hover:bg-[#242424] transition shadow-sm hover:shadow-xl"
+              onClick={() => handlePresenterClick(presenter)}
+              className="group rounded-3xl overflow-hidden bg-gray-100 dark:bg-[#1A1A1A] hover:bg-gray-200 dark:hover:bg-[#242424] transition shadow-sm hover:shadow-xl cursor-pointer"
             >
               <div className="aspect-square overflow-hidden bg-black">
                 <img
@@ -115,7 +134,7 @@ const PresentersPage: React.FC<PresentersPageProps> = () => {
                   {presenter.bio}
                 </p>
 
-                <div className="mt-5 inline-flex items-center text-sm font-black text-orange-500">
+                <div className="mt-5 inline-flex items-center text-sm font-black text-orange-500 group-hover:gap-2 transition-all">
                   View profile →
                 </div>
               </div>
