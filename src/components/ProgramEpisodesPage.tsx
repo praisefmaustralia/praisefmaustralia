@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import {
   ArrowLeft,
   Calendar,
@@ -12,44 +12,111 @@ import {
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 const STREAM_URL = 'https://stream.zeno.fm/vku09lx2rkntv'
+const DEFAULT_COVER = '/logo.png'
 
-const RECENTLY_PLAYED_BY_TITLE: Record<string, { title: string; artist: string; image: string; time: string }[]> = {
+interface Track {
+  title: string
+  artist: string
+  image: string
+  time: string
+}
+
+const RECENTLY_PLAYED_BY_TITLE: Record<string, Omit<Track, 'image'>[]> = {
   'Aussie Morning': [
-    { title: 'Good Morning Mercy', artist: 'Jason Crabb', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/aussie-morning_wo7qjl.webp', time: '07:22 AM' },
-    { title: 'Praise', artist: 'Elevation Worship', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/worship_q6dsql.webp', time: '07:15 AM' }
+    { title: 'Good Morning Mercy', artist: 'Jason Crabb', time: '07:22 AM' },
+    { title: 'Praise', artist: 'Elevation Worship', time: '07:15 AM' }
   ],
   'Worship': [
-    { title: 'The Blessing', artist: 'Kari Jobe', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/worship_q6dsql.webp', time: '09:45 AM' }
+    { title: 'The Blessing', artist: 'Kari Jobe', time: '09:45 AM' },
+    { title: 'Oceans', artist: 'Hillsong United', time: '09:30 AM' }
   ],
   'Midday Journey': [
-    { title: 'Gratitude', artist: 'Brandon Lake', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/midday-journey_iebims.webp', time: '12:35 PM' }
+    { title: 'Gratitude', artist: 'Brandon Lake', time: '12:35 PM' },
+    { title: 'Way Maker', artist: 'Sinach', time: '12:20 PM' }
   ],
   'Next Wave': [
-    { title: 'The Author', artist: 'Brandon Lake', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831667/next-wave_zsxmpi.webp', time: '05:10 PM' }
+    { title: 'The Author', artist: 'Brandon Lake', time: '05:10 PM' },
+    { title: 'Same God', artist: 'Elevation Worship', time: '05:00 PM' }
   ],
   'Road To Home': [
-    { title: 'Take You At Your Word', artist: 'Cody Carnes', image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/road-to-home_rjgcr9.webp', time: '06:20 PM' }
+    { title: 'Take You At Your Word', artist: 'Cody Carnes', time: '06:20 PM' },
+    { title: 'Goodness of God', artist: 'Bethel Music', time: '06:05 PM' }
+  ],
+  'The Night Shift': [
+    { title: 'Yet Not I But Through Christ In Me', artist: 'City Alight', time: '01:10 AM' },
+    { title: 'Rest', artist: 'Hillsong Worship', time: '00:50 AM' }
+  ],
+  'Oz Hip Hop': [
+    { title: 'Be Careful', artist: 'Lecrae', time: '04:10 PM' },
+    { title: 'Welcome To Whateva', artist: 'Andy Mineo', time: '04:00 PM' }
+  ],
+  'Faith & Fuzzy': [
+    { title: 'Build My Life', artist: 'Housefires', time: '08:10 PM' },
+    { title: 'Reckless Love', artist: 'Cory Asbury', time: '08:00 PM' }
+  ],
+  'Throwback': [
+    { title: 'How Great Thou Art', artist: 'Carrie Underwood', time: '09:10 PM' },
+    { title: 'Amazing Grace', artist: 'Chris Tomlin', time: '09:00 PM' }
+  ],
+  'Atmosphere Chill': [
+    { title: 'Still', artist: 'Hillsong Worship', time: '10:10 PM' },
+    { title: 'Peace Be Still', artist: 'Hope Darst', time: '10:00 PM' }
+  ],
+  'Road To Church': [
+    { title: 'Sunday', artist: 'Planetshakers', time: '09:10 AM' },
+    { title: 'This Is Amazing Grace', artist: 'Phil Wickham', time: '09:00 AM' }
+  ],
+  'Sunday Service': [
+    { title: 'Great Are You Lord', artist: 'All Sons & Daughters', time: '08:10 PM' },
+    { title: 'Holy Forever', artist: 'Chris Tomlin', time: '08:00 PM' }
   ]
 }
 
-const DEFAULT_COVER = '/logo.png'
+const fetchArtwork = async (artist: string, title: string): Promise<string> => {
+  try {
+    const query = encodeURIComponent(`${artist} ${title}`)
+    const res = await fetch(`https://itunes.apple.com/search?term=${query}&entity=song&limit=1`)
+    const data = await res.json()
+    const artwork = data?.results?.[0]?.artworkUrl100
+    return artwork ? artwork.replace('100x100bb', '600x600bb') : DEFAULT_COVER
+  } catch {
+    return DEFAULT_COVER
+  }
+}
 
 export default function ProgramDetailPage() {
   const location = useLocation()
   const navigate = useNavigate()
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [tracks, setTracks] = useState<Track[]>([])
 
-  // Lê o programa passado via navigate('/program', { state: { program } })
   const program = (location.state as any)?.program
 
-  // Se não houver programa no state, volta para home
+  useEffect(() => {
+    if (!program) return
+
+    const rawTracks = RECENTLY_PLAYED_BY_TITLE[program.title] || []
+
+    // Inicializa com DEFAULT_COVER e vai atualizando conforme artwork chega
+    const initial: Track[] = rawTracks.map(t => ({ ...t, image: DEFAULT_COVER }))
+    setTracks(initial)
+
+    rawTracks.forEach((t, index) => {
+      fetchArtwork(t.artist, t.title).then(image => {
+        setTracks(prev => {
+          const updated = [...prev]
+          if (updated[index]) updated[index] = { ...updated[index], image }
+          return updated
+        })
+      })
+    })
+  }, [program?.title])
+
   if (!program) {
     navigate('/', { replace: true })
     return null
   }
-
-  const recentlyPlayed = RECENTLY_PLAYED_BY_TITLE[program.title] || []
 
   const formatTime = (time?: string) => {
     if (!time || time === '00:00') return ''
@@ -69,13 +136,11 @@ export default function ProgramDetailPage() {
 
   const togglePlay = async () => {
     if (!audioRef.current) return
-
     if (isPlaying) {
       audioRef.current.pause()
       setIsPlaying(false)
       return
     }
-
     try {
       await audioRef.current.play()
       setIsPlaying(true)
@@ -112,7 +177,6 @@ export default function ProgramDetailPage() {
                 className="w-full aspect-square object-cover rounded-[2rem] shadow-2xl"
                 onError={(e) => { e.currentTarget.src = DEFAULT_COVER }}
               />
-
               <div className="absolute -bottom-5 left-6 bg-white text-black rounded-2xl px-6 py-3 flex items-center gap-3 shadow-xl">
                 <Headphones size={18} className="text-orange-500" />
                 <span className="text-sm font-black uppercase">Live Now</span>
@@ -124,7 +188,6 @@ export default function ProgramDetailPage() {
                 <span className="bg-orange-500 text-white text-xs font-black px-4 py-2 rounded-full uppercase tracking-wide">
                   Live
                 </span>
-
                 {timeRange && (
                   <span className="inline-flex items-center gap-2 text-blue-200 font-bold">
                     <Clock size={18} />
@@ -148,7 +211,6 @@ export default function ProgramDetailPage() {
                     {presenterName}
                   </span>
                 )}
-
                 <span className="inline-flex items-center gap-2 font-black">
                   <Headphones size={20} className="text-orange-500" />
                   Praise FM Australia
@@ -184,15 +246,11 @@ export default function ProgramDetailPage() {
               <p className="text-orange-500 text-xs font-black uppercase tracking-[0.35em] mb-4">
                 Praise FM
               </p>
-
               <h2 className="text-4xl font-black mb-6">About this show</h2>
-
-              <p className="text-lg text-gray-300 leading-relaxed">
-                {program.description}
-              </p>
+              <p className="text-lg text-gray-300 leading-relaxed">{program.description}</p>
             </div>
 
-            {recentlyPlayed.length > 0 && (
+            {tracks.length > 0 && (
               <div className="rounded-[2rem] bg-[#151515] border border-white/10 overflow-hidden">
                 <div className="p-8 md:p-10 flex items-center justify-between">
                   <div>
@@ -204,7 +262,7 @@ export default function ProgramDetailPage() {
                   <Music2 size={36} className="text-orange-500" />
                 </div>
 
-                {recentlyPlayed.map((track, index) => (
+                {tracks.map((track, index) => (
                   <div
                     key={`${track.title}-${track.time}`}
                     className={`flex items-center gap-4 px-6 py-5 border-t border-white/10 ${index === 0 ? 'bg-orange-500/10' : ''}`}
@@ -212,10 +270,9 @@ export default function ProgramDetailPage() {
                     <img
                       src={track.image}
                       alt={track.title}
-                      className="w-16 h-16 rounded-2xl object-cover"
+                      className="w-16 h-16 rounded-2xl object-cover bg-[#222]"
                       onError={(e) => { e.currentTarget.src = DEFAULT_COVER }}
                     />
-
                     <div className="min-w-0 flex-1">
                       {index === 0 && (
                         <p className="text-orange-500 text-[10px] font-black uppercase tracking-wide mb-1">
@@ -225,7 +282,6 @@ export default function ProgramDetailPage() {
                       <h3 className="font-black text-lg truncate">{track.title}</h3>
                       <p className="text-sm text-gray-400 truncate">{track.artist}</p>
                     </div>
-
                     <span className="text-sm font-bold text-blue-200">{track.time}</span>
                   </div>
                 ))}
