@@ -6,16 +6,16 @@ interface PresentersPageProps {
 
 const presenters = [
   {
-    name: 'Noah Bennett',
+    name: 'Olivia Blake',
     program: 'Aussie Morning',
     image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/aussie-morning_wo7qjl.webp',
     bio: 'Worship, encouragement and a fresh start to the day across Australia.'
   },
   {
-    name: 'Olivia Blake',
-    program: 'Worship',
-    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/worship_q6dsql.webp',
-    bio: 'Uplifting praise, peaceful songs and worship moments for every day.'
+    name: 'Noah Bennett',
+    program: 'The Night Shift',
+    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/the-night-shift_hpgryk.webp',
+    bio: 'Calm evenings, reflection and worship after a busy day.'
   },
   {
     name: 'Kelly Fergusson',
@@ -24,46 +24,58 @@ const presenters = [
     bio: 'Positive music and encouragement through the middle of the day.'
   },
   {
-    name: 'Jarrah',
-    program: 'Next Wave',
-    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831667/next-wave_zsxmpi.webp',
-    bio: 'Fresh Christian artists, new voices and the future of worship music.'
-  },
-  {
-    name: 'Sophie Mitchell',
+    name: 'Emily Davis',
     program: 'Road To Home',
     image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/road-to-home_rjgcr9.webp',
     bio: 'Worship, gospel favourites and a warm drive-time atmosphere.'
   },
   {
-    name: 'Emily Davis',
-    program: 'The Night Shift',
-    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/the-night-shift_hpgryk.webp',
-    bio: 'Calm evenings, reflection and worship after a busy day.'
+    name: 'Sophie Mitchell',
+    program: 'Next Wave',
+    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831667/next-wave_zsxmpi.webp',
+    bio: 'Fresh Christian artists, new voices and the future of worship music.'
   },
   {
-    name: 'Jezza',
+    name: 'Jarrah',
     program: 'Oz Hip Hop',
     image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/oz-hiphop_pdhxqt.webp',
     bio: 'Christian hip-hop, urban gospel and bold energy for a new generation.'
   },
   {
+    name: 'Jezza',
+    program: 'Faith & Fuzzy',
+    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/faith-fuzzy_vy0wii.webp',
+    bio: 'Faith conversations, feel-good moments and music that moves the soul.'
+  },
+  {
     name: 'Jack Thompson',
-    program: 'Road To Church',
-    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/road-to-church_ab0zkf.webp',
-    bio: 'Weekend worship and songs that lead listeners toward Sunday.'
+    program: 'Throwback',
+    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/throwback_ypql0b.webp',
+    bio: 'Classic worship songs and timeless Christian favourites.'
   },
   {
     name: 'Thy Keller',
-    program: 'Atmos Chill',
+    program: 'Atmosphere Chill',
     image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831666/atmos-chill_u0ay2q.webp',
     bio: 'Chilled worship, reflective praise and calm sounds for the soul.'
   },
   {
     name: 'Matthew Reed',
-    program: 'Throwback',
-    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/throwback_ypql0b.webp',
-    bio: 'Classic worship songs and timeless Christian favourites.'
+    program: 'Road To Church',
+    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/road-to-church_ab0zkf.webp',
+    bio: 'Weekend worship and songs that lead listeners toward Sunday.'
+  },
+  {
+    name: 'Praise FM Team',
+    program: 'Sunday Service',
+    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781832959/sunday-service_s46wns.webp',
+    bio: 'A special Sunday broadcast full of worship, inspiration and community.'
+  },
+  {
+    name: 'Praise FM Team',
+    program: 'Worship',
+    image: 'https://res.cloudinary.com/ddhu86ukg/image/upload/v1781831668/worship_q6dsql.webp',
+    bio: 'Uplifting praise, peaceful songs and worship moments for every day.'
   }
 ]
 
@@ -71,7 +83,6 @@ const PresentersPage: React.FC<PresentersPageProps> = ({ onNavigateToProgram }) 
   const handlePresenterClick = (presenter: typeof presenters[number]) => {
     if (!onNavigateToProgram) return
 
-    // Monta um objeto compatível com Program usando os dados do presenter
     onNavigateToProgram({
       title: presenter.program,
       host: presenter.name,
@@ -79,7 +90,6 @@ const PresentersPage: React.FC<PresentersPageProps> = ({ onNavigateToProgram }) 
       image: presenter.image,
       cover: presenter.image,
       presenterImage: presenter.image,
-      // Campos obrigatórios do tipo Program com fallback neutro
       startTime: '00:00',
       endTime: '00:00',
       days: []
@@ -104,9 +114,9 @@ const PresentersPage: React.FC<PresentersPageProps> = ({ onNavigateToProgram }) 
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-          {presenters.map((presenter) => (
+          {presenters.map((presenter, index) => (
             <article
-              key={presenter.name}
+              key={`${presenter.name}-${index}`}
               onClick={() => handlePresenterClick(presenter)}
               className="group rounded-3xl overflow-hidden bg-gray-100 dark:bg-[#1A1A1A] hover:bg-gray-200 dark:hover:bg-[#242424] transition shadow-sm hover:shadow-xl cursor-pointer"
             >
@@ -134,7 +144,7 @@ const PresentersPage: React.FC<PresentersPageProps> = ({ onNavigateToProgram }) 
                   {presenter.bio}
                 </p>
 
-                <div className="mt-5 inline-flex items-center text-sm font-black text-orange-500 group-hover:gap-2 transition-all">
+                <div className="mt-5 inline-flex items-center text-sm font-black text-orange-500">
                   View profile →
                 </div>
               </div>
