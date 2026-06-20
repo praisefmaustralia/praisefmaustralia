@@ -1,4 +1,4 @@
-export type Program = {
+export type Show = {
   id: string
   image: string
   title: string
@@ -6,4 +6,5 @@ export type Program = {
   startTime: string
   endTime: string
   description: string
+  days: number[]
 }
