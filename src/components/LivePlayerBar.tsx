@@ -10,7 +10,7 @@ import {
   RotateCcw,
   RotateCw,
 } from 'lucide-react'
-import { Program } from '../types'
+import { Show as Program } from '../types'
 
 interface LivePlayerBarProps {
   isPlaying?: boolean
@@ -79,6 +79,7 @@ const LivePlayerBar: React.FC<LivePlayerBarProps> = ({
     endTime: '00:00',
     description: '',
     image: '',
+    days: [],
   },
   liveMetadata = null,
   queue = [],
