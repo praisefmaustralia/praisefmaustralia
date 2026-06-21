@@ -161,7 +161,7 @@ const LivePlayerBar: React.FC<LivePlayerBarProps> = ({
       {/* QUEUE / UP NEXT */}
       <div
         className={`fixed z-[100] bg-white dark:bg-[#121212] shadow-2xl transition-transform duration-300 flex flex-col
-        left-0 right-0 bottom-[72px] max-h-[58vh] rounded-t-3xl
+        left-0 right-0 bottom-0 max-h-[45vh] rounded-t-3xl
         md:top-0 md:right-0 md:left-auto md:bottom-0 md:w-96 md:max-h-none md:rounded-none
         ${
           showSchedule
@@ -252,7 +252,7 @@ const LivePlayerBar: React.FC<LivePlayerBarProps> = ({
 
       {showSchedule && (
         <div
-          className="fixed inset-0 bg-black/50 z-[99]"
+          className="fixed inset-0 bg-black/40 z-[59]"
           onClick={() => setShowSchedule(false)}
         />
       )}
