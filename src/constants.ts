@@ -76,7 +76,7 @@ const WEEKDAY_SCHEDULE: Program[] = [
     startTime: '16:00',
     endTime: '17:00',
     image: PROGRAM_IMAGES.ozHipHop,
-    description: 'The best of Australian hip hop, fresh beats and homegrown talent.',
+    description: 'The best of Australian hip hop.',
   },
   {
     id: 'wd-next-wave',
@@ -85,7 +85,7 @@ const WEEKDAY_SCHEDULE: Program[] = [
     startTime: '17:00',
     endTime: '18:00',
     image: PROGRAM_IMAGES.nextWave,
-    description: 'New releases and rising artists you need to hear next.',
+    description: 'New releases and rising artists.',
   },
   {
     id: 'wd-road-to-home',
@@ -208,7 +208,7 @@ const SUNDAY_SCHEDULE: Program[] = [
     startTime: '20:00',
     endTime: '21:00',
     image: PROGRAM_IMAGES.sundayService,
-    description: 'Join the live Sunday Service broadcast.',
+    description: 'Join the Sunday Service.',
   },
   {
     id: 'sun-throwback',
@@ -217,7 +217,7 @@ const SUNDAY_SCHEDULE: Program[] = [
     startTime: '21:00',
     endTime: '22:00',
     image: PROGRAM_IMAGES.throwback,
-    description: 'Classic hits and nostalgic favourites from years gone by.',
+    description: 'Classic hits.',
   },
   {
     id: 'sun-atmosphere-chill',
@@ -358,16 +358,7 @@ export const SHOWS: Show[] = [
     description: 'A warm, easygoing hour blending faith talk with feel-good tunes.',
     days: [1, 2, 3, 4, 5, 6],
   },
-  {
-    id: 'sunday-service-1',
-    title: 'Sunday Service',
-    host: 'Praise FM',
-    startTime: '20:00',
-    endTime: '21:00',
-    image: PROGRAM_IMAGES.sundayService,
-    description: 'Join the live Sunday Service broadcast.',
-    days: [0],
-  },
+
   {
     id: 'throwback',
     title: 'Throwback',
@@ -387,25 +378,5 @@ export const SHOWS: Show[] = [
     image: PROGRAM_IMAGES.atmosphereChill,
     description: 'Mellow, atmospheric sounds to wind down before bed.',
     days: [1, 2, 3, 4, 5, 6],
-  },
-  {
-    id: 'sunday-service-2',
-    title: 'Sunday Service',
-    host: 'Praise FM',
-    startTime: '20:00',
-    endTime: '21:00',
-    image: PROGRAM_IMAGES.sundayService,
-    description: 'Join the live Sunday Service broadcast.',
-    days: [0],
-  },
-  {
-    id: 'atmosphere-chill-sunday',
-    title: 'Atmosphere Chill',
-    host: 'Thy Keller',
-    startTime: '22:00',
-    endTime: '00:00',
-    image: PROGRAM_IMAGES.atmosphereChill,
-    description: 'Mellow, atmospheric sounds to wind down before bed.',
-    days: [0],
-  },
+  }
 ];
