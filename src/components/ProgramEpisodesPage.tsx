@@ -151,8 +151,7 @@ export default function ProgramDetailPage() {
 
   return (
     <main className="bg-[#0b0b0b] text-white">
-    
-      />
+      <audio ref={audioRef} src={STREAM_URL} preload="none" />
 
       <section className="border-b border-white/10 bg-gradient-to-br from-[#15100b] via-[#0b0b0b] to-black">
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-10 md:py-20">
