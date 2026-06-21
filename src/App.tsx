@@ -329,6 +329,13 @@ const AppContent: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const eventSourceRef = useRef<EventSource | null>(null)
 
+  // create a dedicated Audio instance to avoid colliding with the global Audio constructor
+  const streamAudio = useMemo(() => {
+    const a = new Audio(STREAM_URL)
+    a.crossOrigin = 'anonymous'
+    return a
+  }, [])
+
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -368,31 +375,28 @@ const AppContent: React.FC = () => {
   }, [theme])
 
   useEffect(() => {
-    const audio = new Audio()
-    audio.src = STREAM_URL
-    audio.crossOrigin = 'anonymous'
-    audio.preload = 'none'
-    audio.volume = parseFloat(localStorage.getItem('praise-volume-au') || '0.8')
+
+
 
     const handlePlay = () => setIsPlaying(true)
     const handlePause = () => setIsPlaying(false)
     const handleError = () => {
-      console.error('Audio error:', audio.error)
+      console.error('Audio error:', streamAudio.error)
       setIsPlaying(false)
     }
 
-    audio.addEventListener('play', handlePlay)
-    audio.addEventListener('pause', handlePause)
-    audio.addEventListener('error', handleError)
+    streamAudio.addEventListener('play', handlePlay)
+    streamAudio.addEventListener('pause', handlePause)
+    streamAudio.addEventListener('error', handleError)
 
-    audioRef.current = audio
+    audioRef.current = streamAudio
 
     return () => {
-      audio.removeEventListener('play', handlePlay)
-      audio.removeEventListener('pause', handlePause)
-      audio.removeEventListener('error', handleError)
-      audio.pause()
-      audio.src = ''
+      streamAudio.removeEventListener('play', handlePlay)
+      streamAudio.removeEventListener('pause', handlePause)
+      streamAudio.removeEventListener('error', handleError)
+      streamAudio.pause()
+      streamAudio.src = ''
       audioRef.current = null
     }
   }, [])
