@@ -11,8 +11,7 @@ import {
 } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
-const STREAM_URL = 'https://stream.zeno.fm/vku09lx2rkntv'
-const DEFAULT_COVER = '/logo.png'
+const DEFAULT_COVER = 'https://via.placeholder.com/600x600?text=No+Artwork'
 
 interface Track {
   title: string
