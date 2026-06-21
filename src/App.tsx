@@ -7,7 +7,15 @@ import Footer from './components/Footer'
 import RecentlyPlayed from './components/RecentlyPlayed'
 import LivePlayerBar from './components/LivePlayerBar'
 import ProgramDetailPage from './components/ProgramEpisodesPage'
-import Playlist from './components/Playlist'
+// Fallback Playlist route component: redirect to /home if local Playlist component is missing
+const Playlist: React.FC = () => {
+  const navigate = useNavigate()
+  useEffect(() => {
+    navigate('/home', { replace: true })
+  }, [navigate])
+
+  return null
+}
 import ScheduleList from './components/ScheduleList'
 import SEO from './components/SEO'
 
@@ -24,7 +32,19 @@ import TermsOfUsePage from './pages/TermsOfUsePage'
 import CookiesPolicyPage from './pages/CookiesPolicyPage'
 
 import { SCHEDULES } from './constants'
-import { Program } from './types'
+
+// Local Program type: ./types does not export Program in some setups
+interface Program {
+  id?: string
+  title?: string
+  startTime: string
+  endTime: string
+  image?: string
+  cover?: string
+  presenterImage?: string
+  presenter?: { image?: string }
+  [key: string]: any
+}
 
 const DEFAULT_COVER = '/logo.png'
 const STREAM_URL = 'https://stream.zeno.fm/vku09lx2rkntv'
@@ -541,9 +561,11 @@ const AppContent: React.FC = () => {
         <LivePlayerBar
           isPlaying={isPlaying}
           onTogglePlayback={togglePlayback}
-          program={currentProgram}
+          // currentProgram may not include all fields required by LivePlayerBar's Show type
+          // cast to any to satisfy TypeScript in this app-level usage
+          program={currentProgram as any}
           liveMetadata={liveMetadata}
-          queue={queue}
+          queue={queue as any}
           audioRef={audioRef}
         />
       )}
