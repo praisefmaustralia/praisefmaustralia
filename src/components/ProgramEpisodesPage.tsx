@@ -151,12 +151,7 @@ export default function ProgramDetailPage() {
 
   return (
     <main className="bg-[#0b0b0b] text-white">
-      <audio
-        ref={audioRef}
-        src={STREAM_URL}
-        preload="none"
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
+    
       />
 
       <section className="border-b border-white/10 bg-gradient-to-br from-[#15100b] via-[#0b0b0b] to-black">
