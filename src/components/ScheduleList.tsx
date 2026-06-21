@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import { Calendar, ChevronLeft, Clock, User } from 'lucide-react';
-import { Program } from '../types';
 import { formatToAMPM } from '../utils/timeFormatter';
 import { SCHEDULES } from '../constants'; // ✅ Usando import em vez de require
+
+interface Program {
+  id: string;
+  title: string;
+  host: string;
+  image: string;
+  startTime: string;
+  endTime: string;
+}
 
 interface ScheduleListProps {
   onNavigateToProgram: (program: Program) => void;
