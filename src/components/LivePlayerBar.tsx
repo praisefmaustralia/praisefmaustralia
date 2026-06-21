@@ -1,99 +1,135 @@
-import React, { useEffect, useState } from 'react'
-import { Play, Pause, Volume2, VolumeX, Volume1, List, X } from 'lucide-react'
+import React, { useState, useEffect, useMemo } from 'react'
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Volume1,
+  List,
+  X,
+  RotateCcw,
+  RotateCw,
+} from 'lucide-react'
 import { Program } from '../types'
 
 interface LivePlayerBarProps {
-  isPlaying: boolean
-  onTogglePlayback: () => void
-  program: Program
+  isPlaying?: boolean
+  onTogglePlayback?: () => void
+  program?: Program
   liveMetadata?: { artist: string; title: string; artwork?: string } | null
   queue?: Program[]
-  audioRef: React.RefObject<HTMLAudioElement | null>
+  audioRef?: React.RefObject<HTMLAudioElement | null>
 }
 
-const formatTimeToAmPm = (time: string | Date): string => {
-  if (time instanceof Date) {
-    const hours = time.getHours()
-    const minutes = time.getMinutes().toString().padStart(2, '0')
-    const period = hours >= 12 ? 'PM' : 'AM'
-    const displayHour = hours % 12 || 12
-
-    return `${displayHour}:${minutes} ${period}`
+const formatTimeToAmPm = (timeString: string): string => {
+  try {
+    if (timeString.includes('AM') || timeString.includes('PM')) return timeString
+    const [hours, minutes] = timeString.split(':')
+    let hour = parseInt(hours, 10)
+    const period = hour >= 12 ? 'PM' : 'AM'
+    hour = hour % 12 || 12
+    return `${hour}:${minutes || '00'} ${period}`
+  } catch {
+    return timeString
   }
+}
 
-  if (time.includes('AM') || time.includes('PM')) return time
+const getSydneyTotalMinutes = () => {
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Australia/Sydney',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
 
-  const [hours, minutes = '00'] = time.split(':')
-  let hour = parseInt(hours || '0', 10)
-  const period = hour >= 12 ? 'PM' : 'AM'
-  hour = hour % 12 || 12
+  const parts = formatter.formatToParts(new Date())
+  const hour = Number(parts.find((p) => p.type === 'hour')?.value || 0)
+  const minute = Number(parts.find((p) => p.type === 'minute')?.value || 0)
 
-  return `${hour}:${minutes} ${period}`
+  return hour * 60 + minute
+}
+
+const getProgramProgress = (program?: Program): number => {
+  if (!program) return 0
+
+  const total = getSydneyTotalMinutes()
+
+  const [sH, sM] = program.startTime.split(':').map(Number)
+  const [eH, eM] = program.endTime.split(':').map(Number)
+
+  const start = sH * 60 + sM
+  let end = eH * 60 + eM
+
+  if (end === 0 || end <= start) end = 24 * 60
+
+  if (total <= start) return 0
+  if (total >= end) return 100
+
+  return Math.round(((total - start) / (end - start)) * 100)
 }
 
 const LivePlayerBar: React.FC<LivePlayerBarProps> = ({
-  isPlaying,
-  onTogglePlayback,
-  program,
-  liveMetadata,
+  isPlaying = false,
+  onTogglePlayback = () => {},
+  program = {
+    id: '',
+    title: 'Praise FM Australia',
+    host: '',
+    startTime: '00:00',
+    endTime: '00:00',
+    description: '',
+    image: '',
+  },
+  liveMetadata = null,
   queue = [],
-  audioRef,
+  audioRef = { current: null },
 }) => {
+  const [isExpanded, setIsExpanded] = useState(false)
   const [showSchedule, setShowSchedule] = useState(false)
-  const [volume, setVolume] = useState(() => {
-    const saved = localStorage.getItem('praise-volume')
-    return saved ? parseFloat(saved) : 0.8
-  })
-  const [isMuted, setIsMuted] = useState(false)
-  const [prevVolume, setPrevVolume] = useState(0.8)
   const [showVolumeSlider, setShowVolumeSlider] = useState(false)
 
-  useEffect(() => {
-    if (!audioRef.current) return
+  const [volume, setVolume] = useState(() => {
+    return parseFloat(localStorage.getItem('praise-volume') || '0.8')
+  })
 
-    audioRef.current.volume = isMuted ? 0 : volume
-    audioRef.current.muted = isMuted
-  }, [volume, isMuted, audioRef])
+  const [isMuted, setIsMuted] = useState(false)
+  const [prevVolume, setPrevVolume] = useState(0.8)
+  const [playbackRate, setPlaybackRate] = useState(1)
 
-  useEffect(() => {
-    if (!('mediaSession' in navigator)) return
+  const progress = useMemo(() => getProgramProgress(program), [program])
 
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: liveMetadata?.title || program.title,
-      artist: liveMetadata?.artist || program.host,
-      artwork: [
-        {
-          src: liveMetadata?.artwork || program.image,
-          sizes: '512x512',
-          type: 'image/png',
-        },
-      ],
-    })
-
-    navigator.mediaSession.setActionHandler('play', onTogglePlayback)
-    navigator.mediaSession.setActionHandler('pause', onTogglePlayback)
-  }, [liveMetadata, program, onTogglePlayback])
+  const displayTitle = liveMetadata?.title || program.title
+  const displayArtist = liveMetadata?.artist || program.host
+  const displayImage = liveMetadata?.artwork || program.image
 
   useEffect(() => {
-    document.body.style.overflow = showSchedule ? 'hidden' : 'unset'
+    if (audioRef.current) {
+      audioRef.current.volume = isMuted ? 0 : volume
+      audioRef.current.muted = isMuted
+      audioRef.current.playbackRate = playbackRate
+    }
+  }, [volume, isMuted, playbackRate, audioRef])
 
+  useEffect(() => {
+    document.body.style.overflow = showSchedule || isExpanded ? 'hidden' : 'unset'
     return () => {
       document.body.style.overflow = 'unset'
     }
-  }, [showSchedule])
+  }, [showSchedule, isExpanded])
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value)
+    const val = parseFloat(e.target.value)
 
-    setVolume(value)
-    localStorage.setItem('praise-volume', value.toString())
+    setVolume(val)
 
-    if (value > 0) {
+    if (val > 0) {
       setIsMuted(false)
-      setPrevVolume(value)
+      setPrevVolume(val)
     } else {
       setIsMuted(true)
     }
+
+    localStorage.setItem('praise-volume', val.toString())
   }
 
   const toggleMute = () => {
@@ -106,58 +142,75 @@ const LivePlayerBar: React.FC<LivePlayerBarProps> = ({
     }
   }
 
+  const cyclePlaybackRate = () => {
+    const rates = [1, 1.25, 1.5, 2]
+    const idx = rates.indexOf(playbackRate)
+    setPlaybackRate(rates[(idx + 1) % rates.length])
+  }
+
   const VolumeIcon = () => {
     if (isMuted || volume === 0) return <VolumeX className="w-5 h-5" />
     if (volume < 0.5) return <Volume1 className="w-5 h-5" />
     return <Volume2 className="w-5 h-5" />
   }
 
-  const displayTitle = liveMetadata?.title || program.title
-  const displayArtist = liveMetadata?.artist || program.host
-  const displayImage = liveMetadata?.artwork || program.image
+  if (!isPlaying) return null
 
   return (
     <>
+      {/* QUEUE / UP NEXT */}
       <div
-        className={`fixed top-0 right-0 bottom-0 w-full md:w-96 z-[100] bg-white dark:bg-[#121212] transition-transform duration-300 flex flex-col shadow-2xl ${
-          showSchedule ? 'translate-x-0' : 'translate-x-full'
+        className={`fixed z-[100] bg-white dark:bg-[#121212] shadow-2xl transition-transform duration-300 flex flex-col
+        left-0 right-0 bottom-[72px] max-h-[58vh] rounded-t-3xl
+        md:top-0 md:right-0 md:left-auto md:bottom-0 md:w-96 md:max-h-none md:rounded-none
+        ${
+          showSchedule
+            ? 'translate-y-0 md:translate-x-0'
+            : 'translate-y-full md:translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200 dark:border-white/10">
-          <h2 className="text-lg font-black text-black dark:text-white">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-white/10">
+          <h2 className="text-xl font-black text-black dark:text-white">
             Up Next
           </h2>
 
           <button
             onClick={() => setShowSchedule(false)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors"
           >
-            <X className="w-5 h-5 text-black dark:text-white" />
+            <X className="w-6 h-6 text-black dark:text-white" />
           </button>
         </div>
 
-        <div className="flex-grow overflow-y-auto">
+        <div className="flex-grow overflow-y-auto pb-4">
           <div className="p-4 border-b border-gray-100 dark:border-white/5">
-            <div className="flex items-start space-x-3">
-              <img
-                src={program.image}
-                className="w-16 h-16 rounded object-cover"
-                alt={program.title}
-              />
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700">
+                {program.image && (
+                  <img
+                    src={program.image}
+                    className="w-full h-full object-cover"
+                    alt={program.title}
+                  />
+                )}
+              </div>
 
-              <div className="flex flex-col min-w-0 flex-grow">
-                <span className="text-[11px] font-black text-[#ff6600] uppercase tracking-widest">
+              <div className="min-w-0 flex-grow">
+                <span className="text-xs font-black text-orange-500 uppercase tracking-widest">
                   Live Now
                 </span>
-                <span className="font-bold text-base text-black dark:text-white truncate">
+
+                <h3 className="font-black text-lg text-black dark:text-white truncate">
                   {program.title}
-                </span>
-                <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                </h3>
+
+                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                   {program.host}
-                </span>
-                <span className="text-xs text-gray-400">
+                </p>
+
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {formatTimeToAmPm(program.startTime)} - {formatTimeToAmPm(program.endTime)}
-                </span>
+                </p>
               </div>
             </div>
           </div>
@@ -167,23 +220,29 @@ const LivePlayerBar: React.FC<LivePlayerBarProps> = ({
               key={prog.id}
               className="p-4 border-b border-gray-100 dark:border-white/5"
             >
-              <div className="flex items-start space-x-3">
-                <img
-                  src={prog.image}
-                  className="w-16 h-16 rounded object-cover"
-                  alt={prog.title}
-                />
+              <div className="flex items-center space-x-4">
+                <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-700">
+                  {prog.image && (
+                    <img
+                      src={prog.image}
+                      className="w-full h-full object-cover"
+                      alt={prog.title}
+                    />
+                  )}
+                </div>
 
-                <div className="flex flex-col min-w-0 flex-grow">
-                  <span className="font-bold text-base text-black dark:text-white truncate">
+                <div className="min-w-0 flex-grow">
+                  <h3 className="font-black text-lg text-black dark:text-white truncate">
                     {prog.title}
-                  </span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                  </h3>
+
+                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                     {prog.host}
-                  </span>
-                  <span className="text-xs text-gray-400">
+                  </p>
+
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     {formatTimeToAmPm(prog.startTime)} - {formatTimeToAmPm(prog.endTime)}
-                  </span>
+                  </p>
                 </div>
               </div>
             </div>
@@ -193,66 +252,88 @@ const LivePlayerBar: React.FC<LivePlayerBarProps> = ({
 
       {showSchedule && (
         <div
-          className="fixed inset-0 bg-black/40 z-[99]"
+          className="fixed inset-0 bg-black/50 z-[99]"
           onClick={() => setShowSchedule(false)}
         />
       )}
 
-      {isPlaying && (
-        <div className="fixed bottom-0 left-0 right-0 z-[60] bg-white dark:bg-[#121212] border-t border-gray-200 dark:border-white/10">
-          <div className="h-1 bg-gray-100 dark:bg-white/10">
-            <div className="h-full w-[38%] bg-[#ff6600]" />
-          </div>
-
-          <div className="hidden md:flex items-center justify-between px-8 py-4">
-            <div className="flex items-center space-x-4 w-[35%] min-w-0">
-              <img
-                src={displayImage}
-                className="w-12 h-12 rounded-full object-cover"
-                alt={displayTitle}
-              />
-
-              <div className="min-w-0">
-                <h4 className="font-bold text-gray-900 dark:text-white truncate text-[15px]">
-                  {displayTitle}
-                </h4>
-                <p className="text-[12px] text-gray-500 dark:text-gray-400 truncate">
-                  {displayArtist}
-                </p>
+      {/* MOBILE MINI PLAYER */}
+      <div
+        className={`fixed bottom-0 left-0 right-0 z-[60] bg-white dark:bg-[#121212] border-t border-gray-200 dark:border-white/10 md:hidden transition-all duration-300 ${
+          isExpanded ? 'h-auto' : 'h-[72px]'
+        }`}
+      >
+        {!isExpanded ? (
+          <div
+            className="flex items-center justify-between px-4 py-3 h-[72px] relative"
+            onClick={() => setIsExpanded(true)}
+          >
+            {displayImage && (
+              <div className="w-12 h-12 rounded-full overflow-hidden mr-3 flex-shrink-0 bg-gray-200">
+                <img
+                  src={displayImage}
+                  alt={displayTitle}
+                  className="w-full h-full object-cover"
+                />
               </div>
+            )}
+
+            <div className="flex flex-col min-w-0 flex-grow">
+              <span className="text-base font-bold text-black dark:text-white leading-tight truncate">
+                {displayTitle}
+              </span>
+
+              <span className="text-sm text-gray-500 dark:text-gray-400 truncate leading-tight">
+                {displayArtist}
+              </span>
             </div>
 
-            <div className="flex items-center justify-center">
+            <div className="flex items-center gap-2">
               <button
-                onClick={onTogglePlayback}
-                className="w-12 h-12 bg-[#ff6600] text-white rounded-full flex items-center justify-center hover:scale-105 transition"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setShowVolumeSlider((v) => !v)
+                }}
+                className="p-2 text-gray-700 dark:text-gray-300"
+              >
+                <VolumeIcon />
+              </button>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onTogglePlayback()
+                }}
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-orange-500 text-white"
               >
                 {isPlaying ? (
                   <Pause className="w-5 h-5 fill-current" />
                 ) : (
-                  <Play className="w-5 h-5 ml-0.5 fill-current" />
+                  <Play className="w-5 h-5 fill-current ml-0.5" />
                 )}
+              </button>
+
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setShowSchedule(true)
+                }}
+                className="p-2 text-gray-700 dark:text-gray-300"
+              >
+                <List className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="flex items-center justify-end space-x-5 w-[35%]">
+            {showVolumeSlider && (
               <div
-                className="flex items-center space-x-2 relative"
-                onMouseEnter={() => setShowVolumeSlider(true)}
-                onMouseLeave={() => setShowVolumeSlider(false)}
+                className="absolute bottom-[82px] right-4 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 rounded-2xl shadow-xl p-4 w-44"
+                onClick={(e) => e.stopPropagation()}
               >
-                <button
-                  onClick={toggleMute}
-                  className="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white"
-                >
-                  <VolumeIcon />
-                </button>
+                <div className="flex items-center gap-3">
+                  <button onClick={toggleMute}>
+                    <VolumeIcon />
+                  </button>
 
-                <div
-                  className={`flex items-center transition-all duration-200 overflow-hidden ${
-                    showVolumeSlider ? 'w-24 opacity-100' : 'w-0 opacity-0'
-                  }`}
-                >
                   <input
                     type="range"
                     min="0"
@@ -260,67 +341,236 @@ const LivePlayerBar: React.FC<LivePlayerBarProps> = ({
                     step="0.01"
                     value={isMuted ? 0 : volume}
                     onChange={handleVolumeChange}
-                    className="w-full h-1 accent-[#ff6600]"
+                    className="w-full accent-orange-500"
                   />
                 </div>
               </div>
+            )}
+
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200 dark:bg-white/10">
+              <div
+                className="h-full bg-orange-500 transition-all duration-1000 ease-out"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-white/10">
+              <span className="text-sm font-semibold text-black dark:text-white">
+                Now Playing
+              </span>
 
               <button
-                onClick={() => setShowSchedule(true)}
-                className="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white"
+                onClick={() => {
+                  setIsExpanded(false)
+                  setShowSchedule(false)
+                }}
+                className="p-2"
               >
-                <List className="w-6 h-6" />
+                <X className="w-5 h-5 text-black dark:text-white" />
               </button>
+            </div>
 
-              <div className="flex items-center space-x-2">
-                <span className="w-2 h-2 bg-[#ff6600] rounded-full animate-pulse" />
-                <span className="text-xs font-black text-[#ff6600] uppercase">
-                  Live
+            <div className="flex items-center space-x-3 px-4 py-4 border-b border-gray-100 dark:border-white/5">
+              <div className="w-14 h-14 flex-shrink-0 rounded overflow-hidden bg-gray-200 dark:bg-gray-700">
+                {displayImage && (
+                  <img
+                    src={displayImage}
+                    className="w-full h-full object-cover"
+                    alt={displayTitle}
+                  />
+                )}
+              </div>
+
+              <div className="min-w-0 flex-grow">
+                <span className="font-bold text-base text-black dark:text-white leading-tight block truncate">
+                  {displayTitle}
+                </span>
+
+                <span className="text-sm text-gray-500 dark:text-gray-400 block truncate">
+                  {displayArtist}
+                </span>
+
+                <span className="text-xs text-gray-400 dark:text-gray-500">
+                  {formatTimeToAmPm(program.startTime)} - {formatTimeToAmPm(program.endTime)} • LIVE
                 </span>
               </div>
             </div>
-          </div>
 
-          <div className="md:hidden flex items-center justify-between px-4 py-3">
-            <div className="flex items-center space-x-3 min-w-0">
-              <img
-                src={displayImage}
-                className="w-11 h-11 rounded-full object-cover"
-                alt={displayTitle}
-              />
-
-              <div className="min-w-0">
-                <h4 className="font-bold text-gray-900 dark:text-white truncate text-sm">
-                  {displayTitle}
-                </h4>
-                <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
-                  {displayArtist}
-                </p>
+            <div className="px-4 py-3">
+              <div className="w-full h-2 bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-orange-500 rounded-full transition-all duration-1000 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <button
-                onClick={onTogglePlayback}
-                className="w-10 h-10 bg-[#ff6600] text-white rounded-full flex items-center justify-center"
-              >
-                {isPlaying ? (
-                  <Pause className="w-4 h-4 fill-current" />
-                ) : (
-                  <Play className="w-4 h-4 ml-0.5 fill-current" />
-                )}
+            <div className="flex items-center justify-center space-x-6 px-4 py-4">
+              <button className="relative w-10 h-10 flex items-center justify-center text-gray-700 dark:text-gray-300">
+                <RotateCcw className="w-5 h-5" strokeWidth={2} />
+                <span className="absolute text-[9px] font-bold mt-[2px]">30</span>
               </button>
 
               <button
-                onClick={() => setShowSchedule(true)}
-                className="text-gray-500 dark:text-gray-400"
+                onClick={onTogglePlayback}
+                className="w-12 h-12 bg-orange-500 text-white rounded-full flex items-center justify-center shadow-lg"
               >
-                <List className="w-6 h-6" />
+                {isPlaying ? (
+                  <Pause className="w-5 h-5 fill-current" />
+                ) : (
+                  <Play className="w-5 h-5 fill-current ml-0.5" />
+                )}
+              </button>
+
+              <button className="relative w-10 h-10 flex items-center justify-center text-gray-700 dark:text-gray-300">
+                <RotateCw className="w-5 h-5" strokeWidth={2} />
+                <span className="absolute text-[9px] font-bold mt-[2px]">30</span>
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100 dark:border-white/5">
+              <div className="flex items-center space-x-2 flex-grow">
+                <button onClick={toggleMute} className="p-2">
+                  <VolumeIcon />
+                </button>
+
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={isMuted ? 0 : volume}
+                  onChange={handleVolumeChange}
+                  className="flex-grow h-1 bg-gray-200 dark:bg-white/20 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                />
+              </div>
+
+              <button
+                onClick={cyclePlaybackRate}
+                className="ml-4 px-2.5 py-1 text-xs font-semibold text-black dark:text-white border border-gray-300 dark:border-white/30 rounded"
+              >
+                {playbackRate}×
               </button>
             </div>
           </div>
+        )}
+      </div>
+
+      {/* DESKTOP PLAYER */}
+      <div className="fixed bottom-0 left-0 right-0 z-[60] bg-white dark:bg-[#121212] border-t border-gray-200 dark:border-white/10 hidden md:flex flex-col transition-colors duration-300">
+        <div className="w-full h-1.5 bg-gray-200 dark:bg-white/10">
+          <div
+            className="h-full bg-orange-500 transition-all duration-1000 ease-out"
+            style={{ width: `${progress}%` }}
+          />
         </div>
-      )}
+
+        <div className="flex items-center justify-between px-8 py-4">
+          <div className="flex items-center space-x-4 w-[30%] min-w-0">
+            <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 border-gray-200 dark:border-white/10 shadow-sm bg-gray-200 dark:bg-gray-700">
+              {displayImage && (
+                <img
+                  src={displayImage}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              )}
+            </div>
+
+            <div className="min-w-0">
+              <h4 className="font-semibold text-gray-900 dark:text-white leading-tight truncate text-[15px]">
+                {displayTitle}
+              </h4>
+
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                {displayArtist}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center space-x-6">
+            <button className="relative w-10 h-10 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
+              <RotateCcw className="w-5 h-5" strokeWidth={2} />
+              <span className="absolute text-[9px] font-bold mt-[2px]">30</span>
+            </button>
+
+            <button
+              onClick={onTogglePlayback}
+              className="w-12 h-12 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center hover:scale-105 transition-all active:scale-95 shadow-md"
+            >
+              {isPlaying ? (
+                <Pause className="w-5 h-5 fill-current" />
+              ) : (
+                <Play className="w-5 h-5 fill-current ml-0.5" />
+              )}
+            </button>
+
+            <button className="relative w-10 h-10 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">
+              <RotateCw className="w-5 h-5" strokeWidth={2} />
+              <span className="absolute text-[9px] font-bold mt-[2px]">30</span>
+            </button>
+          </div>
+
+          <div className="flex items-center justify-end space-x-4 w-[30%]">
+            <div
+              className="flex items-center space-x-2 relative"
+              onMouseEnter={() => setShowVolumeSlider(true)}
+              onMouseLeave={() => setShowVolumeSlider(false)}
+            >
+              <button
+                onClick={toggleMute}
+                className="p-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors"
+              >
+                <VolumeIcon />
+              </button>
+
+              <div
+                className={`flex items-center transition-all duration-200 overflow-hidden ${
+                  showVolumeSlider ? 'w-24 opacity-100' : 'w-0 opacity-0'
+                }`}
+              >
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={isMuted ? 0 : volume}
+                  onChange={handleVolumeChange}
+                  className="w-full h-1 bg-gray-200 dark:bg-white/20 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                />
+
+                <span className="ml-2 text-xs font-medium text-gray-600 dark:text-gray-400 w-6 text-right">
+                  {Math.round((isMuted ? 0 : volume) * 10)}
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={cyclePlaybackRate}
+              className="px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white border border-gray-300 dark:border-white/20 rounded hover:border-black dark:hover:border-white transition-all"
+            >
+              {playbackRate}×
+            </button>
+
+            <button
+              onClick={() => setShowSchedule(true)}
+              className="p-2 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors"
+            >
+              <List className="w-6 h-6" strokeWidth={2} />
+            </button>
+
+            <div className="flex items-center space-x-1.5 px-2">
+              <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+
+              <span className="text-xs font-bold text-orange-500 uppercase tracking-wider">
+                LIVE
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   )
 }
