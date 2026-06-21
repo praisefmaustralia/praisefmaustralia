@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { Play, Pause, ChevronRight, Zap, ArrowRight } from 'lucide-react'
 import { SCHEDULES } from '../constants'
-import { Program } from '../types'
 import { useNavigate } from 'react-router-dom'
 
 const getSydneyInfo = () => {
@@ -35,6 +34,16 @@ const format12h = (time24: string | Date) => {
   const displayH = h % 12 || 12
 
   return `${displayH}:${m.toString().padStart(2, '0')} ${period}`
+}
+
+interface Program {
+  id: string | number
+  title: string
+  host?: string
+  description?: string
+  image?: string
+  startTime: string | Date
+  endTime: string | Date
 }
 
 interface HeroProps {
