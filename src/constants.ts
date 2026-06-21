@@ -220,15 +220,6 @@ const SUNDAY_SCHEDULE: Program[] = [
     description: 'Classic hits and nostalgic favourites from years gone by.',
   },
   {
-    id: 'sun-service-2',
-    title: 'Sunday Service',
-    host: 'Praise FM',
-    startTime: '22:00',
-    endTime: '23:00',
-    image: PROGRAM_IMAGES.sundayService,
-    description: 'Join the live Sunday Service broadcast.',
-  },
-  {
     id: 'sun-atmosphere-chill',
     title: 'Atmosphere Chill',
     host: 'Thy Keller',
