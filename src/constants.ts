@@ -31,7 +31,7 @@ const WEEKDAY_SCHEDULE: Program[] = [
     startTime: '00:00',
     endTime: '06:00',
     image: PROGRAM_IMAGES.nightShift,
-    description: 'Smooth tracks and late-night vibes to keep you company through the early hours.',
+    description: 'Your company through the late-night.',
   },
   {
     id: 'wd-worship-1',
