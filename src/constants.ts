@@ -255,7 +255,7 @@ export const SHOWS: Show[] = [
     startTime: '00:00',
     endTime: '06:00',
     image: PROGRAM_IMAGES.nightShift,
-    description: 'Smooth tracks and late-night vibes to keep you company through the early hours.',
+    description: 'Your company through the early hours.',
     days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
@@ -265,7 +265,7 @@ export const SHOWS: Show[] = [
     startTime: '06:00',
     endTime: '07:00',
     image: PROGRAM_IMAGES.worship,
-    description: 'A peaceful hour of worship music to start your day with the right heart.',
+    description: 'Worship to kick off your day.',
     days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
@@ -275,7 +275,7 @@ export const SHOWS: Show[] = [
     startTime: '07:00',
     endTime: '12:00',
     image: PROGRAM_IMAGES.aussieMorning,
-    description: 'Your morning companion with news, music, and good energy to kick off the day.',
+    description: 'Your morning companion with worships to kick off the day.',
     days: [1, 2, 3, 4, 5, 6],
   },
   {
@@ -295,7 +295,7 @@ export const SHOWS: Show[] = [
     startTime: '12:00',
     endTime: '13:00',
     image: PROGRAM_IMAGES.worship,
-    description: 'A midday pause for worship and reflection.',
+    description: 'Worship to close out your Sunday.',
     days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
@@ -305,7 +305,7 @@ export const SHOWS: Show[] = [
     startTime: '13:00',
     endTime: '16:00',
     image: PROGRAM_IMAGES.middayJourney,
-    description: 'An afternoon journey through great music and uplifting conversation.',
+    description: 'A journey through great worship.',
     days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
@@ -315,7 +315,7 @@ export const SHOWS: Show[] = [
     startTime: '16:00',
     endTime: '17:00',
     image: PROGRAM_IMAGES.ozHipHop,
-    description: 'The best of Australian hip hop, fresh beats and homegrown talent.',
+    description: 'The best hip hop,.',
     days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
@@ -325,7 +325,7 @@ export const SHOWS: Show[] = [
     startTime: '17:00',
     endTime: '18:00',
     image: PROGRAM_IMAGES.nextWave,
-    description: 'New releases and rising artists you need to hear next.',
+    description: 'New releases and rising artists.',
     days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
@@ -335,7 +335,7 @@ export const SHOWS: Show[] = [
     startTime: '18:00',
     endTime: '20:00',
     image: PROGRAM_IMAGES.roadToHome,
-    description: 'Your drive-time soundtrack for the trip back home.',
+    description: 'Your soundtrack for the trip back home.',
     days: [1, 2, 3, 4, 5, 6],
   },
   {
@@ -345,7 +345,7 @@ export const SHOWS: Show[] = [
     startTime: '18:00',
     endTime: '20:00',
     image: PROGRAM_IMAGES.worship,
-    description: 'An evening of worship music to close out the weekend.',
+    description: 'Worship to close out your Sunday.',
     days: [0],
   },
   {
@@ -355,7 +355,7 @@ export const SHOWS: Show[] = [
     startTime: '20:00',
     endTime: '21:00',
     image: PROGRAM_IMAGES.faithFuzzy,
-    description: 'A warm, easygoing hour blending faith talk with feel-good tunes.',
+    description: 'Rock and roll with faith.',
     days: [1, 2, 3, 4, 5, 6],
   },
 
@@ -366,7 +366,7 @@ export const SHOWS: Show[] = [
     startTime: '21:00',
     endTime: '22:00',
     image: PROGRAM_IMAGES.throwback,
-    description: 'Classic hits and nostalgic favourites from years gone by.',
+    description: 'Classic hits.',
     days: [0, 1, 2, 3, 4, 5, 6],
   },
   {
@@ -376,7 +376,7 @@ export const SHOWS: Show[] = [
     startTime: '22:00',
     endTime: '00:00',
     image: PROGRAM_IMAGES.atmosphereChill,
-    description: 'Mellow, atmospheric sounds to wind down before bed.',
+    description: 'Wind down before bed.',
     days: [1, 2, 3, 4, 5, 6],
   }
 ];
