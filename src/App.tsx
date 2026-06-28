@@ -46,8 +46,8 @@ interface Program {
 }
 
 const DEFAULT_COVER = '/logo.png'
-const STREAM_URL = 'https://stream.zeno.fm/vku09lx2rkntv'
-const METADATA_URL = 'https://api.zeno.fm/mounts/metadata/subscribe/vku09lx2rkntv'
+const STREAM_URL = 'https://stream.zeno.fm/qalochfsdoftv'
+const METADATA_URL = 'https://api.zeno.fm/mounts/metadata/subscribe/qalochfsdoftv'
 
 const BLOCKED_METADATA_KEYWORDS = [
   'praise fm',
