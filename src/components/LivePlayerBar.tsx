@@ -99,9 +99,9 @@ const LivePlayerBar: React.FC<LivePlayerBarProps> = ({
 
   const progress = useMemo(() => getProgramProgress(program), [program])
 
-  const displayTitle = liveMetadata?.title || program.title
-  const displayArtist = liveMetadata?.artist || program.host
-  const displayImage = liveMetadata?.artwork || program.image
+  const displayTitle = program.title
+  const displayArtist = program.host
+  const displayImage = program.image
 
   useEffect(() => {
     if (audioRef.current) {
