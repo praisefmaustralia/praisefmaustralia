@@ -1,121 +1,356 @@
-import React, { useState } from 'react';
-import { Calendar, ChevronLeft, Clock, User } from 'lucide-react';
-import { formatToAMPM } from '../utils/timeFormatter';
-import { SCHEDULES } from '../constants'; // ✅ Usando import em vez de require
+import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { SCHEDULES } from '../constants';
+import { Show } from '../types';
 
-interface Program {
-  id: string;
-  title: string;
-  host: string;
-  image: string;
-  startTime: string;
-  endTime: string;
-}
+type Program = Omit<Show, 'days'>;
 
 interface ScheduleListProps {
   onNavigateToProgram: (program: Program) => void;
-  onBack: () => void;
+  onBack?: () => void;
 }
 
-const ScheduleList: React.FC<ScheduleListProps> = ({ onNavigateToProgram, onBack }) => {
-  const [selectedDay, setSelectedDay] = useState<number>(new Date().getDay());
-  
-  const days = [
-    { id: 0, name: 'Sunday' },
-    { id: 1, name: 'Monday' },
-    { id: 2, name: 'Tuesday' },
-    { id: 3, name: 'Wednesday' },
-    { id: 4, name: 'Thursday' },
-    { id: 5, name: 'Friday' },
-    { id: 6, name: 'Saturday' },
-  ];
-  
-  const schedule = SCHEDULES[selectedDay] || SCHEDULES[1] || [];
-  
-  // Agrupar por período
-  const morningPrograms = schedule.filter((p: Program) => parseInt(p.startTime) < 12);
-  const afternoonPrograms = schedule.filter((p: Program) => parseInt(p.startTime) >= 12 && parseInt(p.startTime) < 18);
-  const eveningPrograms = schedule.filter((p: Program) => parseInt(p.startTime) >= 18);
-  
-  const ProgramRow = ({ program }: { program: Program }) => (
-    <div 
-      onClick={() => onNavigateToProgram(program)}
-      className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 cursor-pointer transition-colors"
-    >
-      <div className="flex items-center gap-4">
-        <img src={program.image} alt={program.title} className="w-12 h-12 rounded-full object-cover" />
-        <div>
-          <h3 className="font-semibold text-gray-900 dark:text-white">{program.title}</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
-            <User className="w-3 h-3" /> {program.host}
-          </p>
-        </div>
-      </div>
-      <div className="flex items-center gap-2 mt-2 sm:mt-0">
-        <Clock className="w-4 h-4 text-gray-400" />
-        <span className="text-sm text-gray-600 dark:text-gray-300">
-          {formatToAMPM(program.startTime)} - {formatToAMPM(program.endTime)}
-        </span>
+// Australia: uses Sydney time (AEDT/AEST)
+const getSydneyDate = (baseDate: Date = new Date()) => {
+  return new Date(baseDate.toLocaleString('en-US', { timeZone: 'Australia/Sydney' }));
+};
+
+const format12h = (time24: string) => {
+  const [h, m] = time24.split(':').map(Number);
+  const period = h >= 12 ? 'PM' : 'AM';
+  const displayH = h % 12 || 12;
+  return `${displayH}:${m.toString().padStart(2, '0')} ${period}`;
+};
+
+const ProgramProgressRing: React.FC<{ program: Program; isActive: boolean; nowMinutes: number }> = ({
+  program,
+  isActive,
+  nowMinutes,
+}) => {
+  const progress = useMemo(() => {
+    if (!isActive) return 0;
+
+    const [sH, sM] = program.startTime.split(':').map(Number);
+    const [eH, eM] = program.endTime.split(':').map(Number);
+
+    const start = sH * 60 + sM;
+    let end = eH * 60 + eM;
+
+    if (end === 0 || end <= start) end = 24 * 60;
+
+    const elapsed = nowMinutes - start;
+    const duration = end - start;
+
+    return Math.min(Math.max(elapsed / duration, 0), 1);
+  }, [program, isActive, nowMinutes]);
+
+  const size = 120;
+  const strokeWidth = 3;
+  const innerSize = size - 24;
+  const radius = innerSize / 2 - strokeWidth / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - progress * circumference;
+
+  return (
+    <div className="relative flex-shrink-0 flex items-center justify-center bg-[#f2f2f2] dark:bg-[#1a1a1a] p-3 group-hover:scale-105 transition-transform duration-500">
+      <div className="relative rounded-full overflow-hidden" style={{ width: innerSize, height: innerSize }}>
+        <img
+          src={program.image}
+          alt={program.title}
+          className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
+        />
+
+        <svg
+          width={innerSize}
+          height={innerSize}
+          className="absolute inset-0 -rotate-90 pointer-events-none"
+        >
+          <circle
+            cx={innerSize / 2}
+            cy={innerSize / 2}
+            r={radius}
+            stroke="#dbdbdb"
+            strokeWidth={strokeWidth}
+            fill="transparent"
+            className="dark:stroke-white/10"
+          />
+
+          {isActive && (
+            <circle
+              cx={innerSize / 2}
+              cy={innerSize / 2}
+              r={radius}
+              stroke="#ff6600"
+              strokeWidth={strokeWidth}
+              fill="transparent"
+              strokeDasharray={circumference}
+              strokeDashoffset={offset}
+              strokeLinecap="butt"
+              className="transition-all duration-1000"
+            />
+          )}
+        </svg>
       </div>
     </div>
   );
-  
+};
+
+const dayMeta = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+
+const ScheduleList: React.FC<ScheduleListProps> = ({ onNavigateToProgram, onBack }) => {
+  const [now, setNow] = useState(getSydneyDate());
+  const [selectedDay, setSelectedDay] = useState(getSydneyDate().getDay());
+  const listContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(getSydneyDate()), 30000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const weekDays = useMemo(() => {
+    const today = getSydneyDate();
+    const currentDay = today.getDay();
+
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(today);
+      date.setDate(today.getDate() - currentDay + i);
+
+      return {
+        value: i,
+        dayLabel: dayMeta[i],
+        dateLabel: date
+          .toLocaleDateString('en-AU', { day: 'numeric', month: 'short' })
+          .toUpperCase(),
+        fullLabel: date.toLocaleDateString('en-AU', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+        }),
+        isToday: i === currentDay,
+        isSunday: i === 0,
+      };
+    });
+  }, [now]);
+
+  const selectedDayInfo = weekDays.find((d) => d.value === selectedDay) || weekDays[0];
+
+  const currentSchedule = useMemo(() => {
+    return SCHEDULES[selectedDay] || SCHEDULES[1];
+  }, [selectedDay]);
+
+  const sections = useMemo(() => {
+    const groups: Record<string, Program[]> = {
+      EARLY: [],
+      MORNING: [],
+      AFTERNOON: [],
+      EVENING: [],
+      LATE: [],
+    };
+
+    currentSchedule.forEach((prog: Program) => {
+      const h = parseInt(prog.startTime.split(':')[0], 10);
+
+      if (h < 6) groups.EARLY.push(prog);
+      else if (h < 12) groups.MORNING.push(prog);
+      else if (h < 18) groups.AFTERNOON.push(prog);
+      else if (h < 22) groups.EVENING.push(prog);
+      else groups.LATE.push(prog);
+    });
+
+    return groups;
+  }, [currentSchedule]);
+
+  const isLiveNow = (startStr: string, endStr: string) => {
+    if (selectedDay !== now.getDay()) return false;
+
+    const [sH, sM] = startStr.split(':').map(Number);
+    const [eH, eM] = endStr.split(':').map(Number);
+
+    const start = sH * 60 + sM;
+    let end = eH * 60 + eM;
+
+    if (end === 0 || end <= start) end = 24 * 60;
+
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    return nowMinutes >= start && nowMinutes < end;
+  };
+
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+  useEffect(() => {
+    if (selectedDay !== now.getDay()) return;
+
+    const scrollTimer = setTimeout(() => {
+      const liveElement = document.querySelector('[data-live="true"]');
+      if (liveElement) {
+        liveElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 300);
+
+    return () => clearTimeout(scrollTimer);
+  }, [selectedDay, now]);
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <button onClick={onBack} className="flex items-center gap-2 text-[#ff6600] mb-6 hover:underline">
-        <ChevronLeft className="w-4 h-4" /> Back
-      </button>
-      
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Weekly Schedule</h1>
-      <p className="text-gray-600 dark:text-gray-400 mb-6">Sydney local time (AEDT/AEST)</p>
-      
-      {/* Day selector */}
-      <div className="flex overflow-x-auto gap-2 mb-8 pb-2">
-        {days.map(day => (
+    <section
+      ref={listContainerRef}
+      className="bg-white dark:bg-[#000] min-h-screen font-sans transition-colors duration-300"
+    >
+      <div className="max-w-7xl mx-auto px-4 py-20">
+        {onBack && (
           <button
-            key={day.id}
-            onClick={() => setSelectedDay(day.id)}
-            className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
-              selectedDay === day.id
-                ? 'bg-[#ff6600] text-white'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-            }`}
+            onClick={onBack}
+            className="flex items-center text-gray-400 hover:text-[#ff6600] transition-colors mb-6 text-xs font-normal uppercase tracking-widest"
           >
-            {day.name}
+            <ArrowLeft className="w-4 h-4 mr-2" /> Back Home
           </button>
-        ))}
+        )}
+
+        <div className="mb-10">
+          <div className="flex flex-col md:flex-row md:items-baseline md:space-x-4 mb-6 border-b-4 border-black dark:border-white pb-6">
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white uppercase tracking-tight leading-none">
+              Schedule
+            </h1>
+            <p className="text-gray-400 font-normal uppercase tracking-wide text-sm mt-4 md:mt-0">
+              {selectedDayInfo.isToday ? 'Today' : selectedDayInfo.dayLabel} •{' '}
+              {selectedDayInfo.fullLabel}
+            </p>
+          </div>
+
+          {/* Timezone label — única diferença visível da versão AU */}
+          <p className="text-xs text-gray-400 uppercase tracking-widest mb-6">
+            Sydney local time (AEDT/AEST)
+          </p>
+
+          <div className="bg-[#1a1f22] overflow-x-auto mb-10">
+            <div className="flex min-w-max border-b border-white/10">
+              {weekDays.map((day) => {
+                const active = selectedDay === day.value;
+
+                return (
+                  <button
+                    key={day.value}
+                    onClick={() => setSelectedDay(day.value)}
+                    className={`min-w-[96px] px-4 py-3 text-center border-r border-white/10 transition-all ${
+                      active
+                        ? 'bg-white text-black'
+                        : 'bg-transparent text-[#ffe600] hover:bg-white/5'
+                    }`}
+                  >
+                    <div className="text-[11px] font-bold tracking-wide">
+                      {day.isToday ? 'TODAY' : day.isSunday ? 'SUN ✝' : day.dayLabel}
+                    </div>
+                    <div className="text-[18px] font-bold leading-tight">{day.dateLabel}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-12">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-[0.25em] text-gray-400">
+            <span className="text-gray-300 dark:text-gray-600">Browse</span>
+
+            {(Object.keys(sections) as string[]).map((title) => (
+              <button
+                key={title}
+                onClick={() =>
+                  document.getElementById(title)?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                  })
+                }
+                className="hover:text-[#ff6600] transition-colors"
+              >
+                {title === 'EARLY' && 'Early Hours'}
+                {title === 'MORNING' && 'Morning'}
+                {title === 'AFTERNOON' && 'Afternoon'}
+                {title === 'EVENING' && 'Evening'}
+                {title === 'LATE' && 'Late Night'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {(Object.entries(sections) as [string, Program[]][]).map(([title, items]) =>
+          items.length > 0 ? (
+            <div key={title} id={title} className="mb-20 scroll-mt-32">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-8 uppercase tracking-tight">
+                {title}
+              </h3>
+
+              <div className="space-y-8">
+                {items.map((prog) => {
+                  const active = isLiveNow(prog.startTime, prog.endTime);
+
+                  return (
+                    <div
+                      key={prog.id}
+                      data-live={active}
+                      onClick={() => onNavigateToProgram(prog)}
+                      className={`relative flex flex-col md:flex-row items-start p-6 transition-all cursor-pointer group rounded-sm ${
+                        active
+                          ? 'bg-gray-50 dark:bg-white/5 border-l-8 border-[#ff6600] shadow-lg'
+                          : 'border-b border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5'
+                      }`}
+                    >
+                      <div className="w-32 flex-shrink-0 flex flex-col mb-6 md:mb-0 pt-1">
+                        <span
+                          className={`text-2xl font-bold tracking-tight ${
+                            active
+                              ? 'text-[#ff6600]'
+                              : 'text-gray-300 dark:text-gray-700 group-hover:text-black dark:group-hover:text-white'
+                          }`}
+                        >
+                          {format12h(prog.startTime)}
+                        </span>
+
+                        {active && (
+                          <div className="mt-3 inline-flex items-center justify-center bg-[#ff6600] text-white text-[10px] font-bold px-3 py-1 uppercase tracking-wider w-24">
+                            ON AIR
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="md:mx-8">
+                        <ProgramProgressRing
+                          program={prog}
+                          isActive={active}
+                          nowMinutes={nowMinutes}
+                        />
+                      </div>
+
+                      <div className="flex-grow min-w-0 pt-1">
+                        <h4 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white group-hover:text-[#ff6600] leading-tight tracking-tight mb-2 transition-all duration-300">
+                          {prog.title}
+                        </h4>
+
+                        <p className="text-gray-500 dark:text-gray-400 font-normal text-base mb-4 tracking-tight">
+                          with {prog.host}
+                        </p>
+
+                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed font-normal max-w-2xl">
+                          {prog.description}
+                        </p>
+
+                        {active && (
+                          <div className="mt-6 flex items-center space-x-3">
+                            <div className="h-1 w-10 bg-[#ff6600] animate-pulse"></div>
+                            <span className="text-[10px] font-semibold text-[#ff6600] uppercase tracking-wider">
+                              Listening now live
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null
+        )}
       </div>
-      
-      {/* Schedule by period */}
-      <div className="bg-white dark:bg-[#1e1e1e] rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
-        {morningPrograms.length > 0 && (
-          <>
-            <div className="px-4 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-              <h2 className="font-semibold text-gray-700 dark:text-gray-300">Morning</h2>
-            </div>
-            {morningPrograms.map((p: Program) => <ProgramRow key={p.id} program={p} />)}
-          </>
-        )}
-        
-        {afternoonPrograms.length > 0 && (
-          <>
-            <div className="px-4 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-              <h2 className="font-semibold text-gray-700 dark:text-gray-300">Afternoon</h2>
-            </div>
-            {afternoonPrograms.map((p: Program) => <ProgramRow key={p.id} program={p} />)}
-          </>
-        )}
-        
-        {eveningPrograms.length > 0 && (
-          <>
-            <div className="px-4 py-2 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-              <h2 className="font-semibold text-gray-700 dark:text-gray-300">Evening</h2>
-            </div>
-            {eveningPrograms.map((p: Program) => <ProgramRow key={p.id} program={p} />)}
-          </>
-        )}
-      </div>
-    </div>
+    </section>
   );
 };
 
