@@ -1,34 +1,64 @@
 import React from 'react';
-import { Mic2, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const DevotionalSection: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="py-16 bg-[#f8f8f8] dark:bg-[#0a0a0a]">
-      <div className="max-w-7xl mx-auto px-4 text-center">
-        <div className="inline-flex items-center justify-center space-x-3 mb-6">
-          <div className="p-2 bg-[#ff6600] rounded-lg">
-            <Mic2 className="w-5 h-5 text-white" />
-          </div>
-          <h2 className="text-3xl font-medium uppercase tracking-tighter dark:text-white">
+    <section className="relative py-20 bg-[#0a0a0a] overflow-hidden">
+
+      {/* Linha de acento no topo */}
+      <div className="absolute top-0 left-0 right-0 h-[3px] bg-[#ff6600]" />
+
+      {/* Texto decorativo de fundo */}
+      <span
+        aria-hidden="true"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+                   text-[160px] font-black tracking-tighter leading-none
+                   text-white/[0.025] select-none pointer-events-none whitespace-nowrap"
+      >
+        WORD
+      </span>
+
+      <div className="relative z-10 max-w-3xl mx-auto px-4">
+
+        {/* Label com dot animado */}
+        <div className="inline-flex items-center gap-2 mb-7">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#ff6600] animate-pulse" />
+          <span className="text-[11px] font-medium tracking-[0.25em] uppercase text-[#ff6600]">
             Daily Devotional
-          </h2>
+          </span>
         </div>
-        <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-8 text-sm md:text-base leading-relaxed">
-          Start your day with spiritual encouragement. Listen to short, powerful devotionals 
-          that strengthen your faith and draw you closer to God.
+
+        {/* Headline */}
+        <h2 className="text-5xl md:text-6xl font-bold leading-[1.05] tracking-tight text-white mb-5">
+          Words that<br />
+          <span className="text-[#ff6600]">move your soul.</span>
+        </h2>
+
+        {/* Divisor */}
+        <div className="w-10 h-[3px] bg-[#ff6600] mb-6" />
+
+        {/* Descrição */}
+        <p className="text-white/50 text-base leading-relaxed max-w-lg mb-10">
+          Short, powerful daily devotionals to encourage and inspire your walk with God.
         </p>
-        <button
-          onClick={() => navigate('/devotional')}
-          className="inline-flex items-center px-6 py-3 bg-[#ff6600] text-white font-bold uppercase text-sm tracking-wider rounded-full hover:bg-orange-600 transition-colors"
-        >
-          Listen Now <ChevronRight className="w-4 h-4 ml-1" />
-        </button>
+
+        {/* CTA */}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => navigate('/devotional')}
+            className="inline-flex items-center px-5 py-3 bg-[#ff6600] text-black font-semibold rounded-md hover:opacity-90"
+          >
+            Read Today's Devotional
+          </button>
+        </div>
+
       </div>
+
     </section>
   );
+
 };
 
 export default DevotionalSection;
