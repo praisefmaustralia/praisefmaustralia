@@ -480,10 +480,17 @@ const AppContent: React.FC = () => {
 
   const selectedProgram: Program | null = (location.state as any)?.program ?? null
 
+  // --- INÍCIO DO SEO ATUALIZADO ---
   const seo = {
-    title: 'Praise FM Australia - 24/7 Worship & Gospel Radio',
+    title: 'Praise FM Australia | Live Christian Radio Station Sydney',
     description:
-      'Listen live to Praise FM Australia — 24/7 Christian radio streaming worship music, gospel, devotionals and uplifting shows from Sydney.'
+      'Stream Praise FM Australia live from Sydney. Your 24/7 Christian radio station for contemporary worship music, gospel songs, daily devotionals, and uplifting programs.'
+  }
+  // --- FIM DO SEO ATUALIZADO ---
+
+  return (
+    <div className="min-h-screen flex flex-col pb-[120px] bg-white dark:bg-[#121212] transition-colors">
+      <SEO title={seo.title} description={seo.description} />
   }
 
   return (
