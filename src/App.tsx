@@ -18,7 +18,7 @@ const Playlist: React.FC = () => {
 }
 import ScheduleList from './components/ScheduleList'
 import SEO from './components/SEO'
-
+import DevotionalPage from './pages/DevotionalPage'
 import AppHomePage from './pages/AppHomePage'
 import EventsPage from './pages/EventsPage'
 import NewReleasesPage from './pages/NewReleasesPage'
@@ -550,7 +550,6 @@ const AppContent: React.FC = () => {
             }
           />
 
-          <Route path="/devotional" element={<DevotionalPage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/new-releases" element={<NewReleasesPage />} />
           <Route path="/artists" element={<FeaturedArtistsPage />} />
