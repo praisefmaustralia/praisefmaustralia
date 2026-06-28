@@ -254,7 +254,7 @@ const HomeBBC = ({
               </p>
 
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                {liveMetadata ? `${liveMetadata.artist} — ${liveMetadata.title}` : 'Streaming 24/7'}
+                {currentProgram?.host || 'Streaming 24/7'}
               </p>
 
               <button
@@ -536,7 +536,6 @@ const AppContent: React.FC = () => {
             }
           />
 
-          {/* ✅ Rota restaurada */}
           <Route path="/devotional" element={<DevotionalPage />} />
 
           <Route path="/events" element={<EventsPage />} />
