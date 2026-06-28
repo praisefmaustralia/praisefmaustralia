@@ -40,7 +40,7 @@ const WEEKDAY_SCHEDULE: Program[] = [
     startTime: '06:00',
     endTime: '07:00',
     image: PROGRAM_IMAGES.worship,
-    description: 'A peaceful hour of worship music to start your day with the right heart.',
+    description: 'Worship to start your day with the right heart.',
   },
   {
     id: 'wd-aussie-morning',
@@ -49,7 +49,7 @@ const WEEKDAY_SCHEDULE: Program[] = [
     startTime: '07:00',
     endTime: '12:00',
     image: PROGRAM_IMAGES.aussieMorning,
-    description: 'Your morning companion with news, music, and good energy to kick off the day.',
+    description: 'Your morning companion with worship to kick off the day.',
   },
   {
     id: 'wd-worship-2',
@@ -58,7 +58,7 @@ const WEEKDAY_SCHEDULE: Program[] = [
     startTime: '12:00',
     endTime: '13:00',
     image: PROGRAM_IMAGES.worship,
-    description: 'A midday pause for worship and reflection.',
+    description: 'A midday pause for worship.',
   },
   {
     id: 'wd-midday-journey',
@@ -67,7 +67,7 @@ const WEEKDAY_SCHEDULE: Program[] = [
     startTime: '13:00',
     endTime: '16:00',
     image: PROGRAM_IMAGES.middayJourney,
-    description: 'An afternoon journey through great music and uplifting conversation.',
+    description: 'A journey through great worships.',
   },
   {
     id: 'wd-oz-hiphop',
@@ -76,7 +76,7 @@ const WEEKDAY_SCHEDULE: Program[] = [
     startTime: '16:00',
     endTime: '17:00',
     image: PROGRAM_IMAGES.ozHipHop,
-    description: 'The best of Australian hip hop.',
+    description: 'The best of hip hop.',
   },
   {
     id: 'wd-next-wave',
@@ -94,7 +94,7 @@ const WEEKDAY_SCHEDULE: Program[] = [
     startTime: '18:00',
     endTime: '20:00',
     image: PROGRAM_IMAGES.roadToHome,
-    description: 'Your drive-time soundtrack for the trip back home.',
+    description: 'Your soundtrack for the trip back home.',
   },
   {
     id: 'wd-faith-fuzzy',
@@ -103,7 +103,7 @@ const WEEKDAY_SCHEDULE: Program[] = [
     startTime: '20:00',
     endTime: '21:00',
     image: PROGRAM_IMAGES.faithFuzzy,
-    description: 'A warm, easygoing hour blending faith talk with feel-good tunes.',
+    description: "Rock'n Roll and Faith.",
   },
   {
     id: 'wd-throwback',
@@ -112,7 +112,7 @@ const WEEKDAY_SCHEDULE: Program[] = [
     startTime: '21:00',
     endTime: '22:00',
     image: PROGRAM_IMAGES.throwback,
-    description: 'Classic hits and nostalgic favourites from years gone by.',
+    description: 'Classic hits.',
   },
   {
     id: 'wd-atmosphere-chill',
@@ -121,7 +121,7 @@ const WEEKDAY_SCHEDULE: Program[] = [
     startTime: '22:00',
     endTime: '00:00',
     image: PROGRAM_IMAGES.atmosphereChill,
-    description: 'Mellow, atmospheric sounds to wind down before bed.',
+    description: 'Wind down before bed.',
   },
 ];
 
@@ -136,7 +136,7 @@ const SUNDAY_SCHEDULE: Program[] = [
     startTime: '00:00',
     endTime: '06:00',
     image: PROGRAM_IMAGES.nightShift,
-    description: 'Smooth tracks and late-night vibes to keep you company through the early hours.',
+    description: 'Your company through the early hours.',
   },
   {
     id: 'sun-worship-1',
@@ -145,7 +145,7 @@ const SUNDAY_SCHEDULE: Program[] = [
     startTime: '06:00',
     endTime: '07:00',
     image: PROGRAM_IMAGES.worship,
-    description: 'A peaceful hour of worship music to start your Sunday with the right heart.',
+    description: 'Worship to Kick Off Your Sunday.',
   },
   {
     id: 'sun-road-to-church',
@@ -154,7 +154,7 @@ const SUNDAY_SCHEDULE: Program[] = [
     startTime: '07:00',
     endTime: '12:00',
     image: PROGRAM_IMAGES.roadToChurch,
-    description: 'Get ready for church with uplifting music and a Sunday morning lift.',
+    description: 'Worship to prepare your heart for Sunday.',
   },
   {
     id: 'sun-worship-2',
@@ -163,7 +163,7 @@ const SUNDAY_SCHEDULE: Program[] = [
     startTime: '12:00',
     endTime: '13:00',
     image: PROGRAM_IMAGES.worship,
-    description: 'A midday pause for worship and reflection.',
+    description: 'Worship to close out your Sunday.',
   },
   {
     id: 'sun-midday-journey',
@@ -172,7 +172,7 @@ const SUNDAY_SCHEDULE: Program[] = [
     startTime: '13:00',
     endTime: '16:00',
     image: PROGRAM_IMAGES.middayJourney,
-    description: 'An afternoon journey through great music and uplifting conversation.',
+    description: 'A sunday journey through great worships.',
   },
   {
     id: 'sun-oz-hiphop',
@@ -181,7 +181,7 @@ const SUNDAY_SCHEDULE: Program[] = [
     startTime: '16:00',
     endTime: '17:00',
     image: PROGRAM_IMAGES.ozHipHop,
-    description: 'The best of Australian hip hop, fresh beats and homegrown talent.',
+    description: 'The best of hip hop.',
   },
   {
     id: 'sun-next-wave',
@@ -190,7 +190,7 @@ const SUNDAY_SCHEDULE: Program[] = [
     startTime: '17:00',
     endTime: '18:00',
     image: PROGRAM_IMAGES.nextWave,
-    description: 'New releases and rising artists you need to hear next.',
+    description: 'A review of the latest releases.',
   },
   {
     id: 'sun-worship-3',
@@ -199,7 +199,7 @@ const SUNDAY_SCHEDULE: Program[] = [
     startTime: '18:00',
     endTime: '20:00',
     image: PROGRAM_IMAGES.worship,
-    description: 'An evening of worship music to close out the weekend.',
+    description: 'Worship to close out your Sunday.',
   },
   {
     id: 'sun-service-1',
@@ -226,7 +226,7 @@ const SUNDAY_SCHEDULE: Program[] = [
     startTime: '22:00',
     endTime: '00:00',
     image: PROGRAM_IMAGES.atmosphereChill,
-    description: 'Mellow, atmospheric sounds to wind down before bed.',
+    description: 'Wind down before bed.',
   },
 ];
 
