@@ -20,7 +20,7 @@ import ScheduleList from './components/ScheduleList'
 import SEO from './components/SEO'
 
 import AppHomePage from './pages/AppHomePage'
-import DevotionalPage from './pages/DevotionalPage'
+import DevotionalPage from './pages/DevotionalPage.tsx '
 import EventsPage from './pages/EventsPage'
 import NewReleasesPage from './pages/NewReleasesPage'
 import FeaturedArtistsPage from './pages/FeaturedArtistsPage'
