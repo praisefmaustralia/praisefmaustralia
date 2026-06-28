@@ -20,7 +20,6 @@ import ScheduleList from './components/ScheduleList'
 import SEO from './components/SEO'
 
 import AppHomePage from './pages/AppHomePage'
-import DevotionalPage from './pages/DevotionalPage.tsx '
 import EventsPage from './pages/EventsPage'
 import NewReleasesPage from './pages/NewReleasesPage'
 import FeaturedArtistsPage from './pages/FeaturedArtistsPage'
@@ -30,6 +29,13 @@ import FeedbackPage from './pages/FeedbackPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfUsePage from './pages/TermsOfUsePage'
 import CookiesPolicyPage from './pages/CookiesPolicyPage'
+
+const DevotionalPage: React.FC = () => (
+  <div className="max-w-7xl mx-auto px-4 py-12">
+    <h1 className="text-3xl font-bold dark:text-white mb-4">Devotional</h1>
+    <p className="text-gray-600 dark:text-gray-400">Daily inspiration and devotionals coming soon.</p>
+  </div>
+)
 
 import { SCHEDULES } from './constants'
 
