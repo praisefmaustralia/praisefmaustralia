@@ -200,26 +200,12 @@ const Hero: React.FC<HeroProps> = ({
             </h2>
 
             <p className="text-2xl text-gray-500 dark:text-gray-400 font-bold mb-3">
-              with {currentProgram.host}
+              {currentProgram.host}
             </p>
 
             <p className="text-lg text-gray-600 dark:text-gray-400 font-normal mb-6">
               {currentProgram.description}
             </p>
-
-            {liveMetadata && (
-              <div className="mb-7">
-                <p className="text-[11px] text-[#ff6600] font-black uppercase tracking-widest mb-1">
-                  Now Playing
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  <span className="font-bold text-black dark:text-white">
-                    {liveMetadata.title}
-                  </span>{' '}
-                  — {liveMetadata.artist}
-                </p>
-              </div>
-            )}
 
             <button
               onClick={onListenClick}
@@ -271,7 +257,7 @@ const Hero: React.FC<HeroProps> = ({
                       </h3>
 
                       <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 leading-snug">
-                        {prog.description}
+                        {prog.host}
                       </p>
                     </div>
                   </div>
