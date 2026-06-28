@@ -328,7 +328,6 @@ const AppContent: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const eventSourceRef = useRef<EventSource | null>(null)
 
-  // create a dedicated Audio instance to avoid colliding with the global Audio constructor
   const streamAudio = useMemo(() => {
     const a = new Audio(STREAM_URL)
     a.crossOrigin = 'anonymous'
@@ -374,9 +373,6 @@ const AppContent: React.FC = () => {
   }, [theme])
 
   useEffect(() => {
-
-
-
     const handlePlay = () => setIsPlaying(true)
     const handlePause = () => setIsPlaying(false)
     const handleError = () => {
@@ -422,8 +418,6 @@ const AppContent: React.FC = () => {
       })
   }
 
-  // Navega para a página do programa passando os dados via location.state
-  // Isso evita dependência de estado em memória e funciona ao recarregar a página
   const openProgramPage = (program: Program) => {
     navigate('/program', { state: { program } })
   }
@@ -484,7 +478,6 @@ const AppContent: React.FC = () => {
     }
   }, [])
 
-  // Lê o programa selecionado do location.state (funciona mesmo ao recarregar)
   const selectedProgram: Program | null = (location.state as any)?.program ?? null
 
   const seo = {
@@ -543,6 +536,9 @@ const AppContent: React.FC = () => {
             }
           />
 
+          {/* ✅ Rota restaurada */}
+          <Route path="/devotional" element={<DevotionalPage />} />
+
           <Route path="/events" element={<EventsPage />} />
           <Route path="/new-releases" element={<NewReleasesPage />} />
           <Route path="/artists" element={<FeaturedArtistsPage />} />
@@ -563,8 +559,6 @@ const AppContent: React.FC = () => {
         <LivePlayerBar
           isPlaying={isPlaying}
           onTogglePlayback={togglePlayback}
-          // currentProgram may not include all fields required by LivePlayerBar's Show type
-          // cast to any to satisfy TypeScript in this app-level usage
           program={currentProgram as any}
           liveMetadata={liveMetadata}
           queue={queue as any}
